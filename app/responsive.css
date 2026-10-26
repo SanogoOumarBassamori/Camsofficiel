@@ -1,0 +1,67 @@
+.form-date-row,.form-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-actions button{min-height:44px;padding:11px 12px;font-size:10px;line-height:1.4}
+.form-actions button+button{background:#fff;color:var(--green);border:1px solid var(--green)}
+.form-actions button:disabled{opacity:.6;cursor:wait}
+.form-honeypot{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.section.contact{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:clamp(24px,5vw,72px)}
+.whatsapp-request{display:block;margin-top:10px;padding:12px;text-align:center;background:#eaf2e9;color:#164c38;font-size:10px;font-weight:700}
+@media(max-width:900px){.section.contact{grid-template-columns:1fr;gap:30px}.contact-box{width:100%;max-width:720px;margin-inline:auto}}
+@media(max-width:620px){.form-date-row,.form-actions{grid-template-columns:1fr}.request-form input,.request-form select,.request-form textarea{font-size:16px}.contact-box{padding:22px 18px}.contact-box>span{font-size:9px}}
+@media(max-width:360px){.section{padding-left:5%;padding-right:5%}.brand small{letter-spacing:.02em}.topbar .nav-cta{max-width:102px;line-height:1.3}}
+/* En-tête mobile : prend le dessus sur les anciennes règles générales. */
+@media(max-width:850px){
+  .topbar{position:sticky;display:flex;flex-wrap:nowrap;gap:10px;min-width:0}
+  .topbar .brand{flex:1 1 auto;min-width:0;gap:8px;font-size:20px}
+  .topbar .brand img{flex:0 0 auto;width:44px;height:44px}
+  .topbar .brand small{font-size:7px;line-height:1.25;letter-spacing:.03em}
+  .topbar .menu-toggle{display:inline-flex;flex:0 0 42px}
+  .topbar nav.site-nav{display:none;position:absolute;left:0;right:0;top:100%;z-index:6;flex-direction:column;gap:0;padding:8px 5% 16px;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 12px 20px #252a2712}
+  .topbar nav.site-nav.is-open{display:flex}
+  .topbar nav.site-nav a,.topbar nav.site-nav a:nth-child(3),.topbar nav.site-nav a:nth-child(4){display:block;padding:13px 0;font-size:14px;border-bottom:1px solid #f0eee9}
+  .topbar .nav-cta{display:block;flex:0 0 auto;max-width:118px;font-size:9px;line-height:1.3;padding:7px 0;text-align:center}
+  .topbar .nav-cta span{margin-left:3px}
+}
+@media(max-width:380px){
+  .topbar{gap:6px;padding-inline:4%}
+  .topbar .brand{font-size:17px;gap:5px}
+  .topbar .brand img{width:36px;height:36px}
+  .topbar .brand small{font-size:6px}
+  .topbar .nav-cta{max-width:88px;font-size:8px}
+  .topbar .menu-toggle{flex-basis:38px;width:38px;height:38px}
+}
+/* Animations de l’accueil */
+@keyframes cams-rise-in{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes cams-card-in{from{opacity:0;transform:translateY(20px) rotate(-1deg)}to{opacity:1;transform:translateY(0) rotate(2deg)}}
+@keyframes cams-ring-turn{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes cams-orb-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.hero-copy>*{animation:cams-rise-in .7s both;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+.hero-copy>.eyebrow{animation-delay:.05s}
+.hero-copy>h1{animation-delay:.14s}
+.hero-copy>.hero-sub{animation-delay:.22s}
+.hero-copy>.hero-text{animation-delay:.3s}
+.hero-copy>.hero-actions{animation-delay:.38s}
+.hero-copy>.hero-note{animation-delay:.46s}
+.hero-art .art-card{animation:cams-card-in .85s .22s both cubic-bezier(.2,.7,.2,1);transition:box-shadow .25s,transform .25s}
+.hero-art .art-card:hover{transform:translateY(-5px) rotate(1deg);box-shadow:0 32px 68px #343b3022}
+.hero-art .art-ring{animation:cams-ring-turn 90s linear infinite}
+.hero-art .art-orb{animation:cams-orb-float 4s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-copy>*,.hero-art .art-card,.hero-art .art-ring,.hero-art .art-orb{animation:none!important;transition:none!important}.hero-art .art-card{transform:rotate(2deg)}}
+/* Bandeau défilant des domaines d’accompagnement */
+.domains-marquee{overflow:hidden;padding:22px 0 19px;background:#164c38;color:#fff}
+.domains-label{margin:0 7% 13px;color:#d8bf80;font-size:8px;font-weight:700;letter-spacing:.18em}
+.domains-window{overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+.domains-track{display:flex;width:max-content;animation:cams-marquee 36s linear infinite}
+.domains-group{display:flex;flex:0 0 auto;align-items:center;gap:28px;padding-right:28px;white-space:nowrap}
+.domains-group span{font:500 18px 'Playfair Display',Georgia,serif}
+.domains-group i{color:#d8bf80;font-size:13px;font-style:normal}
+.domains-window:hover .domains-track{animation-play-state:paused}
+@keyframes cams-marquee{to{transform:translateX(-50%)}}
+.service-card,.axis-grid article,.values>div,.step{transition:transform .28s ease,border-color .28s ease,box-shadow .28s ease}
+.service-card:hover,.axis-grid article:hover,.values>div:hover{transform:translateY(-5px)}
+.axis-grid article:hover{border-top-color:#d8bf80}
+@supports(animation-timeline:view()){
+  .intro-grid,.values,.section-head,.service-grid,.audience-list,.axis-grid,.approach-left,.steps,.quote,.contact-box{animation:cams-section-in linear both;animation-timeline:view();animation-range:entry 0% entry 28%}
+  @keyframes cams-section-in{from{opacity:.25;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+}
+@media(max-width:620px){.domains-marquee{padding:17px 0 15px}.domains-group{gap:18px;padding-right:18px}.domains-group span{font-size:16px}.domains-label{margin-bottom:10px}}
+@media(prefers-reduced-motion:reduce){.domains-track{animation:none!important;transform:none!important}.domains-window{mask-image:none}.service-card,.axis-grid article,.values>div,.step{transition:none!important}.service-card:hover,.axis-grid article:hover,.values>div:hover{transform:none}}

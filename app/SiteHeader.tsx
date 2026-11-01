@@ -1,23 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const links = [
-  ["Le cabinet", "#cabinet"],
-  ["Nos services", "#services"],
-  ["Nos publics", "#publics"],
-  ["Notre approche", "#approche"],
+  ["Le cabinet", "/#cabinet"],
+  ["Nos services", "/#services"],
+  ["Nos publics", "/#publics"],
+  ["Notre approche", "/#approche"],
+  ["Médiathèque", "/mediatheque"],
+  ["Nos équipes", "/equipe"],
 ];
 
 export default function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   return (
-    <header className="topbar">
-      <a className="brand" href="#accueil" onClick={() => setOpen(false)}>
+    <header className={`topbar${scrolled ? " is-scrolled" : ""}`}>
+      <Link className="brand" href="/#accueil" onClick={() => setOpen(false)}>
         <Image src="/logo.jpg" alt="Logo du CAMS" width={1280} height={1080} priority />
         <span>CAMS<small>Cabinet d’Accompagnement<br />et de Management Social</small></span>
-      </a>
+      </Link>
       <button
         className="menu-toggle"
         type="button"
@@ -27,9 +39,9 @@ export default function SiteHeader() {
         onClick={() => setOpen(!open)}
       >{open ? "×" : "☰"}</button>
       <nav id="site-navigation" className={`site-nav${open ? " is-open" : ""}`} aria-label="Navigation principale">
-        {links.map(([label, href]) => <a key={href} href={href} onClick={() => setOpen(false)}>{label}</a>)}
+        {links.map(([label, href]) => <Link key={href} href={href} aria-current={pathname === href ? "page" : undefined} onClick={() => setOpen(false)}>{label}</Link>)}
       </nav>
-      <a className="nav-cta" href="#contact">Prendre rendez-vous <span>↗</span></a>
+      <Link className="nav-cta" href="/#contact">Prendre rendez-vous <span>↗</span></Link>
     </header>
   );
 }

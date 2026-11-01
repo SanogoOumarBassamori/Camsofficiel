@@ -59,9 +59,5 @@
 .service-card,.axis-grid article,.values>div,.step{transition:transform .28s ease,border-color .28s ease,box-shadow .28s ease}
 .service-card:hover,.axis-grid article:hover,.values>div:hover{transform:translateY(-5px)}
 .axis-grid article:hover{border-top-color:#d8bf80}
-@supports(animation-timeline:view()){
-  .intro-grid,.values,.section-head,.service-grid,.audience-list,.axis-grid,.approach-left,.steps,.quote,.contact-box{animation:cams-section-in linear both;animation-timeline:view();animation-range:entry 0% entry 28%}
-  @keyframes cams-section-in{from{opacity:.25;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
-}
 @media(max-width:620px){.domains-marquee{padding:17px 0 15px}.domains-group{gap:18px;padding-right:18px}.domains-group span{font-size:16px}.domains-label{margin-bottom:10px}}
 @media(prefers-reduced-motion:reduce){.domains-track{animation:none!important;transform:none!important}.domains-window{mask-image:none}.service-card,.axis-grid article,.values>div,.step{transition:none!important}.service-card:hover,.axis-grid article:hover,.values>div:hover{transform:none}}

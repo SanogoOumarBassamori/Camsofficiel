@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./refresh.css";
 
 export const metadata: Metadata = {
   title: "CAMS — L’humain au cœur des solutions sociales",
@@ -7,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="fr"><body>{children}</body></html>;
+  return <html lang="fr"><body>{children}<div className="site-band"><span>UNE APPROCHE HUMAINE & PROFESSIONNELLE</span><span>CONFIDENTIALITÉ&nbsp; · &nbsp;DIGNITÉ&nbsp; · &nbsp;ÉCOUTE</span></div></body></html>;
 }

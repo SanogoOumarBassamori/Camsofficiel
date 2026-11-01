@@ -3,7 +3,7 @@ import "./globals.css";
 import "./refresh.css";
 
 export const metadata: Metadata = {
-  title: "CAMS — L’humain au cœur des solutions sociales",
+  title: "CAMS — Transformez vos défis sociaux en leviers de réussite",
   description: "Le Cabinet d’Accompagnement et de Management Social accompagne les personnes, familles et organisations en Côte d’Ivoire.",
 };
 

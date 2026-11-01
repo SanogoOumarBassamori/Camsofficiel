@@ -23,7 +23,7 @@ export default function Equipe() {
     </section>
     {team.length > 0 && <section className="section team-page">
       <div className="section-head"><div><div className="section-kicker">01 / L’ÉQUIPE</div><h2>Celles et ceux <em>qui vous accompagnent.</em></h2></div></div>
-      <div className="team-grid">{team.map((m) => <article className="team-card" key={m.name}>
+      <div className="team-grid">{team.map((m) => <article className="team-card" key={`${m.name}-${m.role}`}>
         <div className="team-photo">{m.photo ? <Image src={m.photo} alt={m.name} fill sizes="(max-width: 620px) 92vw, 25vw" /> : <span aria-hidden="true">{m.name.split(" ").map((w) => w[0]).slice(0, 2).join("")}</span>}</div>
         <h3>{m.name}</h3><p>{m.role}</p>
       </article>)}</div>

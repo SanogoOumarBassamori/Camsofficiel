@@ -3,18 +3,39 @@ export const siteConfig = {
   location: "Abidjan – Côte d’Ivoire",
   email: "sanogooumarbassamori@gmail.com",
   phone: "+225 07 69 50 53 23",
-  whatsapp: "+225 07 69 50 53 23",
+  whatsapp: "+225 05 03 25 82 17",
   // Format international, chiffres uniquement, sans + ni espaces.
   whatsappNumber: "2250503258217",
   socialLinks: [] as { label: string; href: string }[],
   // Médiathèque : ajouter ici les vraies photos (dans public/images), vidéos (lien YouTube) et documents (dans public/documents).
   mediatheque: {
-    photos: [] as { src: string; alt: string; caption: string }[],
-    videos: [] as { title: string; url: string }[],
-    documents: [] as { title: string; href: string }[],
+    // EXEMPLES d’affichage : à remplacer par les vrais contenus avant la mise en ligne.
+    photos: [
+      { src: "/images/formation-abidjan.webp", alt: "Atelier de formation à Abidjan", caption: "Exemple · Atelier de formation, Abidjan" },
+      { src: "/images/reunion-cote-ivoire.webp", alt: "Séance de travail collective", caption: "Exemple · Séance de travail collective" },
+      { src: "/images/service-prevention.webp", alt: "Groupe de parole", caption: "Exemple · Groupe de parole bien-être" },
+      { src: "/images/service-formation.webp", alt: "Session de coaching", caption: "Exemple · Session de coaching" },
+      { src: "/images/ecoute-soutien.webp", alt: "Entretien d’écoute", caption: "Exemple · Entretien d’écoute" },
+      { src: "/images/service-management.webp", alt: "Diagnostic social en entreprise", caption: "Exemple · Diagnostic social en entreprise" },
+    ] as { src: string; alt: string; caption: string }[],
+    videos: [
+      { title: "Exemple · Présentation du CAMS en 2 minutes", url: "https://www.youtube.com/" },
+      { title: "Exemple · Témoignage d’une structure accompagnée", url: "https://www.youtube.com/" },
+    ] as { title: string; url: string }[],
+    documents: [
+      { title: "Exemple · Plaquette de présentation du CAMS (PDF)", href: "/documents/exemple-plaquette-cams.pdf" },
+    ] as { title: string; href: string }[],
   },
   // Nos équipes : nom, fonction et photo (dans public/images) de chaque membre.
-  team: [] as { name: string; role: string; photo?: string }[],
+  // EXEMPLES d’affichage : à remplacer par les vrais membres avant la mise en ligne.
+  team: [
+    { name: "Prénom Nom", role: "Directeur·rice — Management social" },
+    { name: "Prénom Nom", role: "Travailleur·se social·e — Accompagnement psychosocial" },
+    { name: "Prénom Nom", role: "Formateur·rice & coach" },
+    { name: "Prénom Nom", role: "Médiateur·rice — Gestion des plaintes" },
+    { name: "Prénom Nom", role: "Diététicien·ne — Nutrition" },
+    { name: "Prénom Nom", role: "Chargé·e de prévention & bien-être" },
+  ] as { name: string; role: string; photo?: string }[],
 };
 
 // Domaines d’intervention, avec une icône au même trait (24 × 24, contour) pour chacun.
@@ -26,3 +47,10 @@ export const services = [
   { title: "Médiation & gestion des plaintes", text: "Des dispositifs d’écoute, d’orientation, de médiation et de gestion des situations sensibles.", img: "service-mediation", alt: "Deux hommes en discussion autour d’une table", icon: ["M3 6.5A2.5 2.5 0 0 1 5.5 4h8A2.5 2.5 0 0 1 16 6.5v4a2.5 2.5 0 0 1-2.5 2.5H8l-3.5 3V13A2.5 2.5 0 0 1 3 10.5z", "M19 9a2 2 0 0 1 2 2v4.5a2 2 0 0 1-2 2V20l-3-2.5h-4a2 2 0 0 1-2-2"] },
   { title: "Nutrition & diététique", text: "Éducation nutritionnelle et accompagnement en diététique selon les besoins et le champ de compétence.", img: "service-nutrition-saine", alt: "Femme savourant un repas sain à base de fruits", icon: ["M12 7.5c-1.6-1.3-5.2-1.4-6.6 1.6-1.3 2.9-.4 7 2 9.3 1.4 1.3 3 1.1 4.6.4 1.6.7 3.2.9 4.6-.4 2.4-2.3 3.3-6.4 2-9.3-1.4-3-5-2.9-6.6-1.6z", "M12 7.5c0-2 1-3.6 3-4.5"] },
 ];  
+// Choix du formulaire de rendez-vous, partagés par le formulaire et la vérification côté serveur.
+export const appointment = {
+  audiences: ["Un particulier ou une famille", "Une entreprise ou organisation", "Un établissement d’enseignement", "Une ONG, association ou un projet", "Une administration ou collectivité"],
+  topics: [...services.map((s) => s.title), "Je ne sais pas encore"],
+  modes: ["Au cabinet, à Abidjan", "Dans nos locaux (sur site)", "En visioconférence", "Par téléphone"],
+  slots: ["Matin (8 h – 12 h)", "Après-midi (14 h – 17 h)", "Flexible"],
+};

@@ -41,7 +41,7 @@ export default function SiteHeader() {
       <nav id="site-navigation" className={`site-nav${open ? " is-open" : ""}`} aria-label="Navigation principale">
         {links.map(([label, href]) => <Link key={href} href={href} aria-current={pathname === href ? "page" : undefined} onClick={() => setOpen(false)}>{label}</Link>)}
       </nav>
-      <Link className="nav-cta" href="/#contact">Prendre rendez-vous <span>↗</span></Link>
+      <Link className="nav-cta" href="/#contact"><b className="cta-full">Prendre rendez-vous</b><b className="cta-short">Rendez-vous</b> <span>↗</span></Link>
     </header>
   );
 }

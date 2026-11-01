@@ -34,7 +34,7 @@ export default function Mediatheque() {
       </div>
       <div className="media-block">
         <div className="section-head"><div><div className="section-kicker">02 / VIDÉOS</div><h2>Paroles <em>et témoignages.</em></h2></div></div>
-        {videos.length ? <ul className="media-list">{videos.map((v) => <li key={v.url}><a href={v.url} target="_blank" rel="noopener noreferrer">{v.title} <span>↗</span></a></li>)}</ul>
+        {videos.length ? <ul className="media-list">{videos.map((v) => <li key={v.title}><a href={v.url} target="_blank" rel="noopener noreferrer">{v.title} <span>↗</span></a></li>)}</ul>
           : <Empty text="Nos vidéos et témoignages seront bientôt disponibles." />}
       </div>
       <div className="media-block">

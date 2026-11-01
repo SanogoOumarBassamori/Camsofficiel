@@ -1,90 +1,134 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { siteConfig } from "./site-config";
+import { appointment, siteConfig } from "./site-config";
 
-function localToday() {
+type Status = { kind: "info" | "error"; text: string } | null;
+
+function localDate(offsetDays = 0) {
   const date = new Date();
+  date.setDate(date.getDate() + offsetDays);
   date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
   return date.toISOString().slice(0, 10);
 }
 
+function frenchDate(value: string) {
+  const [y, m, d] = value.split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+}
+
+function isSunday(value: string) {
+  const [y, m, d] = value.split("-").map(Number);
+  return new Date(y, m - 1, d).getDay() === 0;
+}
+
 export default function ContactForm() {
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState<Status>(null);
   const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState<"email" | "whatsapp" | null>(null);
   const [whatsappUrl, setWhatsappUrl] = useState("");
+  const [audience, setAudience] = useState("");
+  const isPerson = audience === appointment.audiences[0];
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const submitter = (event.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null;
-    const channel = submitter?.value || "email";
-    const data = new FormData(form);
-    setWhatsappUrl("");
+    const channel = submitter?.value === "whatsapp" ? "whatsapp" : "email";
+    const data = Object.fromEntries(new FormData(form)) as Record<string, string>;
+
+    if (isSunday(data.date)) {
+      setStatus({ kind: "error", text: "Le cabinet est fermé le dimanche : choisissez un autre jour." });
+      return;
+    }
 
     if (channel === "whatsapp") {
       const number = siteConfig.whatsappNumber.replace(/\D/g, "");
-      if (number.length < 8 || number.length > 15) {
-        setStatus("Le numéro WhatsApp du CAMS doit être configuré dans app/site-config.ts.");
-        return;
-      }
       const message = [
-        "Bonjour CAMS, je souhaite demander un rendez-vous.",
-        `Nom : ${data.get("name")}`,
-        `Téléphone : ${data.get("phone")}`,
-        `E-mail : ${data.get("email") || "Non renseigné"}`,
-        `Profil : ${data.get("audience")}`,
-        `Date souhaitée : ${data.get("date")}`,
-        `Disponibilité : ${data.get("time")}`,
-        `Motif : ${data.get("message") || "Non précisé"}`,
-      ].join("\n");
-      setWhatsappUrl(`https://wa.me/${number}?text=${encodeURIComponent(message)}`);
-      setStatus("Votre message WhatsApp est prêt. Ouvrez WhatsApp puis appuyez sur Envoyer.");
+        "Bonjour CAMS, je souhaite prendre rendez-vous.",
+        "",
+        `• Nom : ${data.name}`,
+        `• Téléphone : ${data.phone}`,
+        data.email && `• E-mail : ${data.email}`,
+        `• Profil : ${data.audience}`,
+        data.organization && `• Structure : ${data.organization}`,
+        `• Domaine : ${data.topic}`,
+        `• Type de rendez-vous : ${data.mode}`,
+        `• Date souhaitée : ${frenchDate(data.date)}, ${data.slot}`,
+        data.message && `• Motif : ${data.message}`,
+      ].filter(Boolean).join("\n");
+      const url = `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+      setWhatsappUrl(url);
+      setStatus(null);
+      setSent("whatsapp");
+      window.open(url, "_blank", "noopener,noreferrer");
       return;
     }
 
     setSending(true);
-    setStatus("Envoi de votre demande…");
+    setStatus({ kind: "info", text: "Envoi de votre demande…" });
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: data.get("name"),
-          phone: data.get("phone"),
-          email: data.get("email"),
-          audience: data.get("audience"),
-          date: data.get("date"),
-          time: data.get("time"),
-          message: data.get("message"),
-          website: data.get("website"),
-        }),
+        body: JSON.stringify(data),
       });
       const result = await response.json() as { error?: string };
       if (!response.ok) throw new Error(result.error || "L’envoi a échoué. Réessayez.");
       form.reset();
-      setStatus("Votre demande a été envoyée au CAMS. Le rendez-vous sera confirmé par e-mail ou téléphone.");
+      setAudience("");
+      setStatus(null);
+      setSent("email");
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "L’envoi a échoué. Réessayez ou utilisez WhatsApp.");
+      setStatus({ kind: "error", text: error instanceof Error ? error.message : "L’envoi a échoué. Réessayez ou utilisez WhatsApp." });
     } finally {
       setSending(false);
     }
   }
 
+  if (sent) {
+    return <div className="form-success" role="status">
+      <span className="form-success-icon" aria-hidden="true">✓</span>
+      <h3>{sent === "email" ? "Demande envoyée" : "Votre message WhatsApp est prêt"}</h3>
+      <p>{sent === "email"
+        ? "Merci. Le CAMS a bien reçu votre demande et vous recontacte rapidement pour confirmer le rendez-vous."
+        : "WhatsApp s’est ouvert avec votre demande déjà rédigée : il ne vous reste qu’à appuyer sur Envoyer."}</p>
+      {sent === "whatsapp" && <a className="send-request whatsapp-request" href={whatsappUrl} target="_blank" rel="noopener noreferrer">WhatsApp ne s’est pas ouvert ? Cliquez ici ↗</a>}
+      <button type="button" className="form-reset" onClick={() => { setSent(null); setWhatsappUrl(""); }}>Faire une nouvelle demande</button>
+    </div>;
+  }
+
   return <form className="request-form" onSubmit={handleSubmit}>
-    <label>Nom et prénom<input name="name" autoComplete="name" required maxLength={100} placeholder="Votre nom" /></label>
-    <label>Téléphone<input name="phone" type="tel" autoComplete="tel" required maxLength={30} placeholder="Votre numéro pour être recontacté" /></label>
-    <label>E-mail (facultatif)<input name="email" type="email" autoComplete="email" maxLength={254} placeholder="nom@exemple.com" /></label>
-    <label>Vous êtes<select name="audience" required defaultValue=""><option value="" disabled>Sélectionnez votre profil</option><option>Un particulier ou une famille</option><option>Une entreprise ou organisation</option><option>Un établissement d’enseignement</option><option>Une ONG, association ou un projet</option><option>Une administration ou collectivité</option></select></label>
-    <div className="form-date-row"><label>Date souhaitée<input name="date" type="date" min={localToday()} required /></label><label>Disponibilité<select name="time" required defaultValue=""><option value="" disabled>Choisir</option><option>Matin</option><option>Après-midi</option><option>Flexible</option></select></label></div>
-    <label>Motif du rendez-vous (facultatif)<textarea name="message" maxLength={1000} rows={3} placeholder="Quelques mots pour orienter votre demande" /></label>
+    <fieldset>
+      <legend><span>1</span> Vos coordonnées</legend>
+      <label>Nom et prénom *<input name="name" autoComplete="name" required minLength={2} maxLength={100} placeholder="Ex. : Aya Konan" /></label>
+      <div className="form-date-row">
+        <label>Téléphone / WhatsApp *<input name="phone" type="tel" inputMode="tel" autoComplete="tel" required minLength={8} maxLength={30} pattern="[0-9 +().-]{8,30}" placeholder="Ex. : 07 00 00 00 00" /></label>
+        <label>E-mail<input name="email" type="email" autoComplete="email" maxLength={254} placeholder="nom@exemple.com" /></label>
+      </div>
+      <label>Vous êtes *<select name="audience" required value={audience} onChange={(e) => setAudience(e.target.value)}><option value="" disabled>Sélectionnez votre profil</option>{appointment.audiences.map((a) => <option key={a}>{a}</option>)}</select></label>
+      {audience && !isPerson && <label>Nom de la structure<input name="organization" autoComplete="organization" maxLength={120} placeholder="Entreprise, école, ONG, administration…" /></label>}
+    </fieldset>
+    <fieldset>
+      <legend><span>2</span> Votre demande</legend>
+      <label>Domaine concerné *<select name="topic" required defaultValue=""><option value="" disabled>Choisissez un domaine</option>{appointment.topics.map((t) => <option key={t}>{t}</option>)}</select></label>
+      <label>Motif du rendez-vous<textarea name="message" maxLength={1000} rows={3} placeholder="Quelques mots pour nous aider à préparer l’échange (facultatif)" /></label>
+    </fieldset>
+    <fieldset>
+      <legend><span>3</span> Le rendez-vous</legend>
+      <label>Type de rendez-vous *<select name="mode" required defaultValue=""><option value="" disabled>Choisissez</option>{appointment.modes.map((m) => <option key={m}>{m}</option>)}</select></label>
+      <div className="form-date-row">
+        <label>Date souhaitée *<input name="date" type="date" min={localDate()} max={localDate(180)} required /></label>
+        <label>Créneau *<select name="slot" required defaultValue=""><option value="" disabled>Choisissez</option>{appointment.slots.map((s) => <option key={s}>{s}</option>)}</select></label>
+      </div>
+    </fieldset>
     <label className="form-honeypot" aria-hidden="true">Ne pas remplir<input name="website" tabIndex={-1} autoComplete="off" /></label>
-    <p className="form-note">Évitez d’indiquer des informations personnelles sensibles. Le CAMS confirmera le rendez-vous après réception.</p>
+    <label className="form-consent"><input type="checkbox" name="consent" value="oui" required /><span>J’accepte que le CAMS utilise ces informations pour me recontacter. Elles restent confidentielles. *</span></label>
     <div className="form-actions">
-      <button type="submit" name="channel" value="email" disabled={sending}>{sending ? "Envoi en cours…" : "Envoyer par e-mail"}</button>
-      <button type="submit" name="channel" value="whatsapp" disabled={sending}>Continuer sur WhatsApp</button>
+      <button type="submit" name="channel" value="email" disabled={sending}>{sending ? "Envoi en cours…" : "Envoyer la demande"}</button>
+      <button type="submit" name="channel" value="whatsapp" disabled={sending}>Envoyer via WhatsApp</button>
     </div>
-    <p className="form-note" role="status" aria-live="polite">{status || "Choisissez un mode d’envoi. Le rendez-vous n’est pas confirmé avant la réponse du CAMS."}</p>
-    {whatsappUrl && <a className="send-request whatsapp-request" href={whatsappUrl} target="_blank" rel="noreferrer">Ouvrir WhatsApp et envoyer ↗</a>}
+    {status && <p className={`form-status is-${status.kind}`} role={status.kind === "error" ? "alert" : "status"}>{status.text}</p>}
+    <p className="form-note">* Champs obligatoires. Évitez les informations médicales ou sensibles : nous en parlerons lors du rendez-vous, qui n’est confirmé qu’après la réponse du CAMS.</p>
   </form>;
 }

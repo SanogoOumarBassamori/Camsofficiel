@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 
 // Blocs qui apparaissent en douceur au défilement, en cascade dans leur groupe.
-const SELECTOR = ".section-head, .intro-grid > div, .values > div, .service-card, .audience-list details, .axis-grid article, .approach-left, .step, .quote, .contact-box, .empty-state, .media-photo, .media-list, .pole-card, .team-card, .page-cta";
+const SELECTOR = ".section-head, .intro-grid > div, .values > div, .service-card, .audience-list details, .axis-grid article, .approach-left, .step, .quote, .contact-box, .empty-state, .media-photo, .media-list, .pole-card, .team-card, .partner-card, .page-cta";
 
 export default function ScrollReveal() {
   useEffect(() => {

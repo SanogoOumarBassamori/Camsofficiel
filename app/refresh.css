@@ -1,6 +1,6 @@
 /* Refonte visuelle : couleurs du logo, textes plus grands, photos. Chargé après globals.css. */
 :root{--green:#165a37;--green-dark:#0f3d26;--green2:#5c9e3c;--gold:#c4952f;--gold-ink:#8a6416;--gold-soft:#e2c27a;--plum:#6b2a60;--ink:#1f2622;--muted:#4b544e;--paper:#fbfaf6;--cream:#f5f1e7;--line:#e5dfd2;--radius:16px;--shadow:0 18px 40px rgba(22,52,36,.08);--shadow-strong:0 26px 60px rgba(22,52,36,.14)}
-html{scroll-padding-top:100px}
+html{scroll-padding-top:120px}
 body{font-size:18px;line-height:1.7;color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased}
 figure{margin:0}
 a,button,summary{touch-action:manipulation}
@@ -14,9 +14,9 @@ h1 em,h2 em{font-weight:600}
 .eyebrow i{width:28px;height:2px}
 
 /* En-tête */
-.topbar{height:100px;padding:0 5%;gap:24px;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 6px 24px rgba(22,52,36,.05)}
+.topbar{height:116px;padding:0 5%;gap:24px;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 6px 24px rgba(22,52,36,.05)}
 .topbar .brand{gap:14px;font-size:30px;color:var(--plum)}
-.topbar .brand img{height:80px;width:auto;object-fit:contain}
+.topbar .brand img{height:100px;width:auto;object-fit:contain}
 .topbar .brand small{margin-top:6px;font-size:11px;letter-spacing:.05em;color:var(--green)}
 .topbar .site-nav{gap:30px;font-size:16px;font-weight:500;color:var(--ink)}
 .topbar .site-nav a{position:relative;padding:8px 0}
@@ -120,6 +120,14 @@ body{padding-bottom:48px}
 .quote>span{font-size:13px;color:var(--muted)}
 .contact>div:first-child>p{max-width:460px;font-size:18px;color:var(--muted)}
 .contact,.section.contact{background:var(--cream)}
+.partner-grid{list-style:none;margin:48px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:18px}
+.partner-card>a,.partner-card>div{height:100%;display:grid;grid-template-rows:110px auto;gap:12px;padding:20px;border:1px solid var(--line);border-radius:var(--radius);background:#fff;text-align:center;text-decoration:none;color:var(--ink);transition:border-color .2s,box-shadow .2s,transform .2s}
+.partner-card>a:hover{border-color:var(--gold);box-shadow:var(--shadow);transform:translateY(-2px)}
+.partner-logo{position:relative;display:block}
+.partner-logo img{object-fit:contain}
+.partner-initials{display:grid;place-items:center;font:700 34px/1 Georgia,serif;color:var(--green);background:var(--cream);border-radius:12px}
+.partner-name{font-size:15px;font-weight:600;color:var(--muted)}
+@media (max-width:620px){.partner-grid{margin-top:32px;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.partner-card>a,.partner-card>div{grid-template-rows:80px auto;padding:14px}}
 .contact-place{font-size:17px;font-weight:600;color:var(--green)}
 .contact-config{font-size:16px;line-height:1.7}
 .contact-box{padding:36px;border-radius:var(--radius);border-top:4px solid var(--gold);box-shadow:var(--shadow)}
@@ -135,16 +143,18 @@ body{padding-bottom:48px}
 /* Pied de page */
 footer{padding:36px 5%;flex-wrap:wrap;gap:16px 32px;background:var(--green-dark);color:#dfe7e0;font-size:15px}
 footer a:hover{color:var(--gold-soft)}
+.footer-admin{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border:1px solid rgba(255,255,255,.25);border-radius:999px;font-size:14px;color:#dfe7e0}
+.footer-admin::before{content:"🔒";font-size:12px}
 .photo-credits{flex-basis:100%;padding-top:16px;border-top:1px solid rgba(255,255,255,.14);font-size:14px;color:#b9c7bd}
 .photo-credits a{text-decoration:underline}
 .footer-brand{gap:14px;color:#fff;font-size:26px}
 .footer-brand img{height:68px;width:auto;margin:0;padding:6px;border-radius:12px;background:#fff}
 
 @media(max-width:900px){
-  html{scroll-padding-top:84px}
-  .topbar{height:84px;gap:12px;padding:0 4%}
+  html{scroll-padding-top:96px}
+  .topbar{height:92px;gap:12px;padding:0 4%}
   .topbar .brand{gap:10px;font-size:25px}
-  .topbar .brand img{height:64px;width:auto}
+  .topbar .brand img{height:78px;width:auto}
   .topbar .brand small{display:block;font-size:10px;line-height:1.3}
   .topbar .menu-toggle{width:48px;height:48px;flex:0 0 48px;border-radius:10px;font-size:24px}
   .topbar nav.site-nav{padding:8px 5% 18px;gap:0}
@@ -203,14 +213,14 @@ footer a:hover{color:var(--gold-soft)}
 @media(max-width:380px){
   .topbar{gap:8px;padding:0 3%}
   .topbar .brand>span{display:none}
-  .topbar .brand img{height:58px}
+  .topbar .brand img{height:66px}
   .topbar .nav-cta{max-width:none;font-size:14px}
 }
 /* Animations */
 .topbar{transition:height .3s ease,box-shadow .3s ease}
 .topbar .brand img{transition:height .3s ease}
-.topbar.is-scrolled{height:78px;box-shadow:0 10px 30px rgba(22,52,36,.1)}
-.topbar.is-scrolled .brand img{height:62px}
+.topbar.is-scrolled{height:88px;box-shadow:0 10px 30px rgba(22,52,36,.1)}
+.topbar.is-scrolled .brand img{height:72px}
 .hero-photo{animation:cams-rise-in .9s .15s both cubic-bezier(.2,.7,.2,1)}
 .hero-photo img{animation:cams-hero-zoom 2.2s both cubic-bezier(.2,.7,.2,1)}
 @keyframes cams-hero-zoom{from{transform:scale(1.12)}to{transform:scale(1)}}
@@ -223,7 +233,7 @@ footer a:hover{color:var(--gold-soft)}
 .step:hover>b{transform:translate(3px,-3px)}
 .button span,.topbar .nav-cta span{display:inline-block;transition:transform .25s}
 .button:hover span,.topbar .nav-cta:hover span{transform:translate(3px,-3px)}
-@media(max-width:900px){.topbar.is-scrolled{height:70px}.topbar.is-scrolled .brand img{height:52px}}
+@media(max-width:900px){.topbar.is-scrolled{height:74px}.topbar.is-scrolled .brand img{height:60px}}
 @media(prefers-reduced-motion:reduce){.topbar,.topbar .brand img,.reveal,.service-icon,.step>b,.button span{transition:none!important}.hero-photo,.hero-photo img,.art-caption{animation:none!important}.reveal:not(.is-in){opacity:1;transform:none}.service-card:hover .service-icon,.step:hover>b,.button:hover span{transform:none}}
 @media(prefers-reduced-motion:reduce){.topbar .site-nav a::after,.topbar .nav-cta,.button,.audience-plus,.service-photo img{transition:none!important}.service-card:hover .service-photo img{transform:none}.topbar .nav-cta:hover,.button.dark:hover{transform:none}}
 

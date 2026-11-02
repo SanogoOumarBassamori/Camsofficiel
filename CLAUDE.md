@@ -13,7 +13,9 @@ Stack : [.projetmemory/stack.md](.projetmemory/stack.md). État : [.projetmemory
 ## Architecture (une phrase par composant)
 - `app/` — pages, composants (SiteHeader, ContactForm…) et CSS du site, App Router.
 - `app/site-config.ts` — coordonnées et contenus du site (dont l'e-mail destinataire du formulaire).
-- `app/api/` — route `/api/contact` qui envoie les demandes par e-mail, clé côté serveur.
+- `app/api/` — route `/api/contact` qui enregistre les demandes et les envoie par e-mail, clé côté serveur.
+- `app/admin/` — tableau de bord du client (connexion, coordonnées, médiathèque, équipe, partenaires, demandes) ; voir [TABLEAU_DE_BORD.md](TABLEAU_DE_BORD.md).
+- `app/_server/` — stockage des contenus dans `data/` et sessions de connexion, côté serveur uniquement.
 - `public/` — images statiques (logo).
 
 ## Règles propres au projet

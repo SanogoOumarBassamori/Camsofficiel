@@ -11,7 +11,7 @@ const links = [
   ["Nos publics", "/#publics"],
   ["Notre approche", "/#approche"],
   ["Médiathèque", "/mediatheque"],
-  ["Nos équipes", "/equipe"],
+  ["Notre équipes", "/equipe"],
 ];
 
 export default function SiteHeader() {
@@ -27,8 +27,7 @@ export default function SiteHeader() {
   return (
     <header className={`topbar${scrolled ? " is-scrolled" : ""}`}>
       <Link className="brand" href="/#accueil" onClick={() => setOpen(false)}>
-        <Image src="/logo.jpg" alt="Logo du CAMS" width={1280} height={1080} priority />
-        <span>CAMS<small>Cabinet d’Accompagnement<br />et de Management Social</small></span>
+        <Image src="/logo-header.webp" alt="CAMS — Cabinet d’Accompagnement et de Management Social" width={640} height={597} priority />
       </Link>
       <button
         className="menu-toggle"

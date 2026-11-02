@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { appointment, siteConfig } from "./site-config";
+import { appointment } from "./site-config";
 
 type Status = { kind: "info" | "error"; text: string } | null;
 
@@ -22,7 +22,7 @@ function isSunday(value: string) {
   return new Date(y, m - 1, d).getDay() === 0;
 }
 
-export default function ContactForm() {
+export default function ContactForm({ whatsappNumber }: { whatsappNumber: string }) {
   const [status, setStatus] = useState<Status>(null);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState<"email" | "whatsapp" | null>(null);
@@ -43,7 +43,6 @@ export default function ContactForm() {
     }
 
     if (channel === "whatsapp") {
-      const number = siteConfig.whatsappNumber.replace(/\D/g, "");
       const message = [
         "Bonjour CAMS, je souhaite prendre rendez-vous.",
         "",
@@ -57,11 +56,13 @@ export default function ContactForm() {
         `• Date souhaitée : ${frenchDate(data.date)}, ${data.slot}`,
         data.message && `• Motif : ${data.message}`,
       ].filter(Boolean).join("\n");
-      const url = `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+      const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
       setWhatsappUrl(url);
       setStatus(null);
       setSent("whatsapp");
       window.open(url, "_blank", "noopener,noreferrer");
+      // Copie de la demande pour le tableau de bord ; l’envoi WhatsApp ne dépend pas de sa réussite.
+      fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...data, channel }), keepalive: true }).catch(() => undefined);
       return;
     }
 

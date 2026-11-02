@@ -4,15 +4,16 @@ import Link from "next/link";
 import ScrollReveal from "../ScrollReveal";
 import SiteFooter from "../SiteFooter";
 import SiteHeader from "../SiteHeader";
-import { services, siteConfig } from "../site-config";
+import { getContent } from "../_server/store";
+import { services } from "../site-config";
 
 export const metadata: Metadata = {
   title: "Nos équipes — CAMS",
   description: "Les équipes et pôles d’expertise du Cabinet d’Accompagnement et de Management Social.",
 };
 
-export default function Equipe() {
-  const { team } = siteConfig;
+export default async function Equipe() {
+  const { team } = await getContent();
   return <main>
     <SiteHeader />
     <ScrollReveal />
@@ -23,8 +24,8 @@ export default function Equipe() {
     </section>
     {team.length > 0 && <section className="section team-page">
       <div className="section-head"><div><div className="section-kicker">01 / L’ÉQUIPE</div><h2>Celles et ceux <em>qui vous accompagnent.</em></h2></div></div>
-      <div className="team-grid">{team.map((m) => <article className="team-card" key={`${m.name}-${m.role}`}>
-        <div className="team-photo">{m.photo ? <Image src={m.photo} alt={m.name} fill sizes="(max-width: 620px) 92vw, 25vw" /> : <span aria-hidden="true">{m.name.split(" ").map((w) => w[0]).slice(0, 2).join("")}</span>}</div>
+      <div className="team-grid">{team.map((m) => <article className="team-card" key={m.id}>
+        <div className="team-photo">{m.photo ? <Image src={m.photo} alt={m.name} fill sizes="(max-width: 620px) 92vw, 25vw" unoptimized={m.photo.startsWith("/media/")} /> : <span aria-hidden="true">{m.name.split(" ").map((w) => w[0]).slice(0, 2).join("")}</span>}</div>
         <h3>{m.name}</h3><p>{m.role}</p>
       </article>)}</div>
     </section>}

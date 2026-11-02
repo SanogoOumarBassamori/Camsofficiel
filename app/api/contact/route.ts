@@ -1,4 +1,5 @@
-import { appointment, siteConfig } from "../../site-config";
+import { addRequest, getContent, waNumber } from "../../_server/store";
+import { appointment } from "../../site-config";
 
 export const runtime = "nodejs";
 
@@ -29,10 +30,6 @@ export async function POST(request: Request) {
 
   const length = Number(request.headers.get("content-length") || 0);
   if (length > 12_000) return json({ error: "Le formulaire est trop volumineux." }, 413);
-
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM_EMAIL;
-  if (!apiKey || !from) return json({ error: "L’envoi par e-mail n’est pas encore activé. Utilisez WhatsApp en attendant." }, 503);
 
   let body: Record<string, unknown>;
   try {
@@ -85,10 +82,23 @@ export async function POST(request: Request) {
     ["Créneau", slot],
     ["Motif", message || "Non précisé"],
   ];
+  // Chaque demande est gardée pour le tableau de bord, même si l’e-mail échoue.
+  const channel = field(body, "channel") === "whatsapp" ? "whatsapp" : "email";
+  let saved = true;
+  try {
+    await addRequest({ channel, name, phone, fields: rows });
+  } catch (error) {
+    console.error("CAMS request could not be saved", error instanceof Error ? error.message : "Unknown error");
+    saved = false;
+    if (channel === "whatsapp") return json({ error: "Demande non enregistrée." }, 500);
+  }
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.RESEND_FROM_EMAIL;
+  if (channel === "whatsapp" || (saved && (!apiKey || !from))) return json({ ok: true });
+  if (!apiKey || !from) return json({ error: "La demande n’a pas pu être transmise. Utilisez WhatsApp." }, 503);
+
   const text = ["Nouvelle demande de rendez-vous reçue depuis le site CAMS.", "", ...rows.map(([k, v]) => `${k} : ${v}`)].join("\n");
-  // Numéros ivoiriens à 10 chiffres : l’indicatif 225 précède le 0 (ex. 07… → 22507…).
-  const digits = phone.replace(/\D/g, "");
-  const whatsappLink = `https://wa.me/${digits.length === 10 ? `225${digits}` : digits}`;
+  const whatsappLink = `https://wa.me/${waNumber(phone)}`;
   const html = `<div style="font-family:Arial,sans-serif;max-width:560px;color:#1f2622">
 <h2 style="color:#165a37;margin:0 0 4px">Nouvelle demande de rendez-vous</h2>
 <p style="color:#4b544e;margin:0 0 18px">Reçue depuis le site du CAMS.</p>
@@ -103,7 +113,7 @@ export async function POST(request: Request) {
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         from,
-        to: [siteConfig.email],
+        to: [(await getContent()).contact.email],
         subject: `Rendez-vous : ${name} — ${topic}`,
         reply_to: email || undefined,
         text,
@@ -113,11 +123,13 @@ export async function POST(request: Request) {
     });
     if (!response.ok) {
       console.error("Resend rejected a CAMS contact request", response.status);
+      if (saved) return json({ ok: true });
       return json({ error: "L’e-mail n’a pas pu être envoyé. Réessayez ou utilisez WhatsApp." }, 502);
     }
     return json({ ok: true });
   } catch (error) {
     console.error("CAMS contact email request failed", error instanceof Error ? error.message : "Unknown error");
+    if (saved) return json({ ok: true });
     return json({ error: "Le service e-mail est indisponible. Réessayez ou utilisez WhatsApp." }, 502);
   }
 }

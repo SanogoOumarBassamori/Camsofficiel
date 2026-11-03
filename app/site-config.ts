@@ -47,6 +47,14 @@ export const services = [
   { title: "Médiation & gestion des plaintes", text: "Des dispositifs d’écoute, d’orientation, de médiation et de gestion des situations sensibles.", img: "service-mediation", alt: "Deux hommes en discussion autour d’une table", icon: ["M3 6.5A2.5 2.5 0 0 1 5.5 4h8A2.5 2.5 0 0 1 16 6.5v4a2.5 2.5 0 0 1-2.5 2.5H8l-3.5 3V13A2.5 2.5 0 0 1 3 10.5z", "M19 9a2 2 0 0 1 2 2v4.5a2 2 0 0 1-2 2V20l-3-2.5h-4a2 2 0 0 1-2-2"] },
   { title: "Nutrition & diététique", text: "Éducation nutritionnelle et accompagnement en diététique selon les besoins et le champ de compétence.", img: "service-nutrition-saine", alt: "Femme savourant un repas sain à base de fruits", icon: ["M12 7.5c-1.6-1.3-5.2-1.4-6.6 1.6-1.3 2.9-.4 7 2 9.3 1.4 1.3 3 1.1 4.6.4 1.6.7 3.2.9 4.6-.4 2.4-2.3 3.3-6.4 2-9.3-1.4-3-5-2.9-6.6-1.6z", "M12 7.5c0-2 1-3.6 3-4.5"] },
 ];  
+// Pôles d’expertise affichés sur la page Nos équipes (icônes reprises des domaines).
+export const poles = [
+  { title: "Accompagnement psychosocial et coaching", text: "Écoute, soutien psychosocial et coaching des personnes, des familles et des équipes face aux difficultés personnelles et professionnelles.", icon: services[0].icon },
+  { title: "Management social et consultance", text: "Diagnostic, conseil et accompagnement des organisations pour un climat social apaisé et une meilleure performance humaine.", icon: services[1].icon },
+  { title: "Formation", text: "Des formations sur mesure pour renforcer les compétences, les pratiques professionnelles et l’autonomie des équipes.", icon: services[2].icon },
+  { title: "Nutrition et diététique", text: "Éducation nutritionnelle et accompagnement diététique adaptés aux besoins des personnes et des structures.", icon: services[5].icon },
+];
+
 // Choix du formulaire de rendez-vous, partagés par le formulaire et la vérification côté serveur.
 export const appointment = {
   audiences: ["Un particulier ou une famille", "Une entreprise ou organisation", "Un établissement d’enseignement", "Une ONG, association ou un projet", "Une administration ou collectivité"],

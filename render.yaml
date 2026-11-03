@@ -1,0 +1,29 @@
+# Hébergement Render (Blueprint). Offre gratuite : le site marche, mais le tableau de bord perd ses changements
+# à chaque mise en veille ou redéploiement. Pour garder les données : passer en "starter" et ajouter le disque ci-dessous.
+services:
+  - type: web
+    name: cams
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: ADMIN_USER
+        value: cams
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM_EMAIL
+        sync: false
+    # Avec le plan "starter" :
+    # disk:
+    #   name: cams-data
+    #   mountPath: /var/data
+    #   sizeGB: 1
+    # et ajouter la variable CAMS_DATA_DIR = /var/data

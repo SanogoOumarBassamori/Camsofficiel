@@ -5,7 +5,7 @@ import ScrollReveal from "../ScrollReveal";
 import SiteFooter from "../SiteFooter";
 import SiteHeader from "../SiteHeader";
 import { getContent } from "../_server/store";
-import { services } from "../site-config";
+import { poles } from "../site-config";
 
 export const metadata: Metadata = {
   title: "Nos équipes — CAMS",
@@ -30,8 +30,8 @@ export default async function Equipe() {
       </article>)}</div>
     </section>}
     <section className="section team-page">
-      <div className="section-head"><div><div className="section-kicker">{team.length ? "02" : "01"} / NOS PÔLES D’EXPERTISE</div><h2>Six domaines, <em>une même équipe.</em></h2></div><p>Chaque demande est confiée au pôle le plus adapté, et plusieurs pôles travaillent ensemble lorsque la situation le demande.</p></div>
-      <div className="pole-grid">{services.map((s, i) => <article className="pole-card" key={s.title}>
+      <div className="section-head"><div><div className="section-kicker">{team.length ? "02" : "01"} / NOS PÔLES D’EXPERTISE</div><h2>Quatre pôles, <em>une même équipe.</em></h2></div><p>Chaque demande est confiée au pôle le plus adapté, et plusieurs pôles travaillent ensemble lorsque la situation le demande.</p></div>
+      <div className="pole-grid">{poles.map((s, i) => <article className="pole-card" key={s.title}>
         <div className="card-top"><span className="service-icon"><svg viewBox="0 0 24 24" aria-hidden="true">{s.icon.map((d) => <path key={d} d={d} />)}</svg></span><span className="service-n">0{i + 1}</span></div>
         <h3>Pôle {s.title}</h3><p>{s.text}</p>
       </article>)}</div>

@@ -4,6 +4,7 @@ import { requireAdmin } from "../_server/auth";
 import { getContent, listRequests, waNumber } from "../_server/store";
 import { addDocument, addPhoto, addVideo, logout, removeMedia, removeMember, removePartner, removeRequest, saveContact, saveMember, savePartner, savePassword, setRequestStatus } from "./actions";
 import { Confirm, Submit } from "./Buttons";
+import IdleGuard from "./IdleGuard";
 
 const tabs = [
   ["demandes", "Demandes"],
@@ -24,6 +25,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
   const fresh = requests.filter((r) => r.status === "nouvelle").length;
 
   return <main className="admin">
+    <IdleGuard />
     <header className="admin-top">
       <Link href="/admin" className="admin-brand"><Image src="/logo-header.webp" alt="CAMS" width={640} height={597} /> <span>Tableau de bord</span></Link>
       <div className="admin-top-actions">

@@ -59,6 +59,6 @@ export const poles = [
 export const appointment = {
   audiences: ["Un particulier ou une famille", "Une entreprise ou organisation", "Un établissement d’enseignement", "Une ONG, association ou un projet", "Une administration ou collectivité"],
   topics: [...services.map((s) => s.title), "Je ne sais pas encore"],
-  modes: ["Au cabinet, à Abidjan", "Dans nos locaux (sur site)", "En visioconférence", "Par téléphone"],
+  modes: ["Au cabinet, à Abidjan", "Dans vos locaux (sur site)", "En visioconférence", "Par téléphone"],
   slots: ["Matin (8 h – 12 h)", "Après-midi (14 h – 17 h)", "Flexible"],
 };

@@ -10,12 +10,16 @@ const back = (tab: string, key: "ok" | "err", message: string): never => redirec
 const failure = (error: unknown) => (error instanceof Error && !("digest" in error) ? error.message : "");
 
 const attempts = new Map<string, { count: number; resetAt: number }>();
+// Garde-fou global : l’adresse IP vient d’un en-tête que le client peut falsifier pour tourner la limite par adresse.
+// Un seul compte existe, donc on plafonne aussi le total d’essais ratés, toutes adresses confondues.
+let global = { count: 0, resetAt: 0 };
 
 export async function login(form: FormData) {
   const ip = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
   const now = Date.now();
   const entry = attempts.get(ip);
-  if (entry && entry.resetAt > now && entry.count >= 5) redirect("/admin/connexion?err=Trop de tentatives. Réessayez dans 15 minutes.");
+  const tooMany = (entry && entry.resetAt > now && entry.count >= 5) || (global.resetAt > now && global.count >= 30);
+  if (tooMany) redirect("/admin/connexion?err=Trop de tentatives. Réessayez dans 15 minutes.");
   if (await checkCredentials(text(form, "username"), String(form.get("password") ?? ""))) {
     attempts.delete(ip);
     await openSession();
@@ -23,6 +27,8 @@ export async function login(form: FormData) {
   }
   if (!entry || entry.resetAt <= now) attempts.set(ip, { count: 1, resetAt: now + 15 * 60_000 });
   else entry.count += 1;
+  if (global.resetAt <= now) global = { count: 1, resetAt: now + 15 * 60_000 };
+  else global.count += 1;
   redirect("/admin/connexion?err=Identifiant ou mot de passe incorrect.");
 }
 

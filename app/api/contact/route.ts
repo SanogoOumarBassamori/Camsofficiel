@@ -4,6 +4,8 @@ import { appointment } from "../../site-config";
 export const runtime = "nodejs";
 
 const attempts = new Map<string, { count: number; resetAt: number }>();
+// Garde-fou global : l’adresse IP vient d’un en-tête falsifiable ; on plafonne aussi le total toutes adresses confondues.
+let global = { count: 0, resetAt: 0 };
 
 function json(body: object, status = 200) {
   return Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
@@ -66,9 +68,11 @@ export async function POST(request: Request) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   const now = Date.now();
   const previous = attempts.get(ip);
-  if (previous && previous.resetAt > now && previous.count >= 5) return json({ error: "Trop de demandes. Réessayez dans quelques minutes." }, 429);
+  if ((previous && previous.resetAt > now && previous.count >= 5) || (global.resetAt > now && global.count >= 60)) return json({ error: "Trop de demandes. Réessayez dans quelques minutes." }, 429);
   if (!previous || previous.resetAt <= now) attempts.set(ip, { count: 1, resetAt: now + 15 * 60_000 });
   else previous.count += 1;
+  if (global.resetAt <= now) global = { count: 1, resetAt: now + 15 * 60_000 };
+  else global.count += 1;
 
   const rows: [string, string][] = [
     ["Nom", name],

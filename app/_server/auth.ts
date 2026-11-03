@@ -7,7 +7,8 @@ import { readAdmin, writeAdmin } from "./store";
 
 const scryptAsync = promisify(scrypt) as (password: string, salt: string, length: number) => Promise<Buffer>;
 const COOKIE = "cams_admin";
-const SESSION_DAYS = 7;
+// Déconnexion automatique après ce délai sans activité ; chaque action du tableau de bord le repousse.
+const IDLE_MINUTES = 10;
 
 // Identifiant et mot de passe de départ dans les variables d’environnement ; le mot de passe changé depuis le tableau de bord est gardé haché.
 export function authConfigured() {
@@ -44,14 +45,21 @@ export async function checkCredentials(username: string, password: string) {
 // La version du mot de passe fait partie de la session : le changer déconnecte les autres appareils.
 export async function openSession() {
   const { version } = await readAdmin();
-  const payload = `${Date.now() + SESSION_DAYS * 86_400_000}.${version}`;
+  const payload = `${Date.now() + IDLE_MINUTES * 60_000}.${version}`;
   (await cookies()).set(COOKIE, `${payload}.${sign(payload)}`, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: SESSION_DAYS * 86_400,
+    maxAge: IDLE_MINUTES * 60,
   });
+}
+
+// Prolonge la session tant que l’administrateur est actif ; sinon le cookie expire de lui-même.
+export async function touchSession() {
+  if (!(await isAdmin())) return false;
+  await openSession();
+  return true;
 }
 
 export async function closeSession() {

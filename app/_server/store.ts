@@ -130,7 +130,10 @@ export async function saveImage(file: File, shape: "photo" | "square" | "logo" =
   if (file.size > 8 * MB) throw new Error("La photo dépasse 8 Mo.");
   let output: Buffer;
   try {
-    const image = sharp(Buffer.from(await file.arrayBuffer()), { limitInputPixels: 50_000_000 }).rotate();
+    const image = sharp(Buffer.from(await file.arrayBuffer()), { limitInputPixels: 50_000_000 });
+    // Seuls les vrais JPG, PNG et WebP passent : un SVG ou un autre format piégé est refusé.
+    if (!["jpeg", "png", "webp"].includes((await image.metadata()).format ?? "")) throw new Error("format");
+    image.rotate();
     const sized = shape === "square" ? image.resize(600, 600, { fit: "cover" })
       : shape === "logo" ? image.resize({ width: 480, height: 240, fit: "inside", withoutEnlargement: true })
       : image.resize({ width: 1600, height: 1600, fit: "inside", withoutEnlargement: true });

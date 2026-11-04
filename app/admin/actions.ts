@@ -2,11 +2,12 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { changePassword, checkCredentials, closeSession, openSession, requireAdmin } from "../_server/auth";
+import { changePassword, checkCredentials, closeSession, openSession, requireAdmin, sealMessage } from "../_server/auth";
 import { newId, removeUpload, saveDocument, saveImage, updateContent, updateRequests } from "../_server/store";
 
 const text = (form: FormData, key: string, max = 200) => String(form.get(key) ?? "").trim().slice(0, max);
-const back = (tab: string, key: "ok" | "err", message: string): never => redirect(`/admin?tab=${tab}&${key}=${encodeURIComponent(message)}`);
+const back = (tab: string, key: "ok" | "err", message: string): never => redirect(`/admin?tab=${tab}&${key}=${encodeURIComponent(message)}&s=${sealMessage(message)}`);
+const toLogin = (message: string): never => redirect(`/admin/connexion?err=${encodeURIComponent(message)}&s=${sealMessage(message)}`);
 const failure = (error: unknown) => (error instanceof Error && !("digest" in error) ? error.message : "");
 
 const attempts = new Map<string, { count: number; resetAt: number }>();
@@ -17,10 +18,12 @@ let global = { count: 0, resetAt: 0 };
 export async function login(form: FormData) {
   const ip = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
   const now = Date.now();
+  if (attempts.size > 1000) for (const [key, value] of attempts) if (value.resetAt <= now) attempts.delete(key);
   const entry = attempts.get(ip);
   const tooMany = (entry && entry.resetAt > now && entry.count >= 5) || (global.resetAt > now && global.count >= 30);
-  if (tooMany) redirect("/admin/connexion?err=Trop de tentatives. Réessayez dans 15 minutes.");
-  if (await checkCredentials(text(form, "username"), String(form.get("password") ?? ""))) {
+  if (tooMany) toLogin("Trop de tentatives. Réessayez dans 15 minutes.");
+  // Mot de passe tronqué : un texte énorme ne peut pas occuper le serveur pendant le calcul.
+  if (await checkCredentials(text(form, "username"), String(form.get("password") ?? "").slice(0, 256))) {
     attempts.delete(ip);
     await openSession();
     redirect("/admin");
@@ -29,7 +32,7 @@ export async function login(form: FormData) {
   else entry.count += 1;
   if (global.resetAt <= now) global = { count: 1, resetAt: now + 15 * 60_000 };
   else global.count += 1;
-  redirect("/admin/connexion?err=Identifiant ou mot de passe incorrect.");
+  toLogin("Identifiant ou mot de passe incorrect.");
 }
 
 export async function logout() {
@@ -200,6 +203,7 @@ export async function savePassword(form: FormData) {
   await requireAdmin();
   const password = String(form.get("password") ?? "");
   if (password.length < 10) back("compte", "err", "Le mot de passe doit contenir au moins 10 caractères.");
+  if (password.length > 200) back("compte", "err", "Le mot de passe doit contenir au plus 200 caractères.");
   if (password !== String(form.get("confirm") ?? "")) back("compte", "err", "Les deux mots de passe ne sont pas identiques.");
   await changePassword(password);
   await openSession();

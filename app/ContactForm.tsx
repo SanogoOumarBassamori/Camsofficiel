@@ -104,7 +104,7 @@ export default function ContactForm({ whatsappNumber }: { whatsappNumber: string
       <legend><span>1</span> Vos coordonnées</legend>
       <label>Nom et prénom *<input name="name" autoComplete="name" required minLength={2} maxLength={100} placeholder="Ex. : Aya Konan" /></label>
       <div className="form-date-row">
-        <label>Téléphone / WhatsApp *<input name="phone" type="tel" inputMode="tel" autoComplete="tel" required minLength={8} maxLength={30} pattern="[0-9 +().-]{8,30}" placeholder="Ex. : 07 00 00 00 00" /></label>
+        <label>Téléphone / WhatsApp *<input name="phone" type="tel" inputMode="tel" autoComplete="tel" required minLength={8} maxLength={30} pattern="[0-9 +\(\)\-.]{8,30}" placeholder="Ex. : 07 00 00 00 00" /></label>
         <label>E-mail<input name="email" type="email" autoComplete="email" maxLength={254} placeholder="nom@exemple.com" /></label>
       </div>
       <label>Vous êtes *<select name="audience" required value={audience} onChange={(e) => setAudience(e.target.value)}><option value="" disabled>Sélectionnez votre profil</option>{appointment.audiences.map((a) => <option key={a}>{a}</option>)}</select></label>

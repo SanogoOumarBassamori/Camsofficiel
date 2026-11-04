@@ -12,7 +12,7 @@ export default function IdleGuard() {
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
     const expire = () => {
-      router.push("/admin/connexion?err=" + encodeURIComponent("Vous avez été déconnecté après 10 minutes d’inactivité."));
+      router.push("/admin/connexion?expired=1");
     };
     const arm = () => { clearTimeout(timer); timer = setTimeout(expire, IDLE_MS); };
     const onActivity = () => {

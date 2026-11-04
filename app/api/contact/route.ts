@@ -11,9 +11,28 @@ function json(body: object, status = 200) {
   return Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
 }
 
-function field(body: Record<string, unknown>, key: string) {
+// Caractères de contrôle et d’inversion d’écriture retirés (faux noms, sauts de ligne dans l’objet de l’e-mail) ; seul le motif garde ses retours à la ligne.
+function field(body: Record<string, unknown>, key: string, multiline = false) {
   const value = body[key];
-  return typeof value === "string" ? value.trim() : "";
+  if (typeof value !== "string") return "";
+  const cleaned = value.replace(/[\u202a-\u202e\u2066-\u2069]/g, "");
+  return (multiline ? cleaned.replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, "") : cleaned.replace(/[\u0000-\u001f\u007f\u2028\u2029]/g, " ")).trim();
+}
+
+// Lit le corps sans jamais dépasser la limite, même si l’en-tête de taille est absent ou faux.
+async function readBody(request: Request, limit: number) {
+  const reader = request.body?.getReader();
+  if (!reader) return "";
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > limit) { await reader.cancel(); return null; }
+    chunks.push(value);
+  }
+  return Buffer.concat(chunks).toString("utf8");
 }
 
 function escapeHtml(value: string) {
@@ -28,14 +47,24 @@ function frenchDate(value: string) {
 export async function POST(request: Request) {
   const origin = request.headers.get("origin");
   const host = request.headers.get("host");
-  if (origin && host && new URL(origin).host !== host) return json({ error: "Requête refusée." }, 403);
+  let sameOrigin = true;
+  try {
+    sameOrigin = !origin || !host || new URL(origin).host === host;
+  } catch {
+    sameOrigin = false;
+  }
+  if (!sameOrigin) return json({ error: "Requête refusée." }, 403);
 
-  const length = Number(request.headers.get("content-length") || 0);
-  if (length > 12_000) return json({ error: "Le formulaire est trop volumineux." }, 413);
+  if (Number(request.headers.get("content-length") || 0) > 12_000) return json({ error: "Le formulaire est trop volumineux." }, 413);
+  const raw = await readBody(request, 12_000);
+  if (raw === null) return json({ error: "Le formulaire est trop volumineux." }, 413);
 
+  // Seul un objet JSON est accepté : null, tableau ou nombre sont refusés au lieu de faire planter la route.
   let body: Record<string, unknown>;
   try {
-    body = await request.json();
+    const parsed: unknown = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("not an object");
+    body = parsed as Record<string, unknown>;
   } catch {
     return json({ error: "Le formulaire est invalide." }, 400);
   }
@@ -51,7 +80,7 @@ export async function POST(request: Request) {
   const mode = field(body, "mode");
   const date = field(body, "date");
   const slot = field(body, "slot");
-  const message = field(body, "message");
+  const message = field(body, "message", true);
 
   if (name.length < 2 || name.length > 100) return json({ error: "Vérifiez le nom saisi." }, 400);
   if (!/^[0-9 +().-]{8,30}$/.test(phone)) return json({ error: "Vérifiez le numéro de téléphone." }, 400);
@@ -67,6 +96,7 @@ export async function POST(request: Request) {
 
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   const now = Date.now();
+  if (attempts.size > 1000) for (const [key, entry] of attempts) if (entry.resetAt <= now) attempts.delete(key);
   const previous = attempts.get(ip);
   if ((previous && previous.resetAt > now && previous.count >= 5) || (global.resetAt > now && global.count >= 60)) return json({ error: "Trop de demandes. Réessayez dans quelques minutes." }, 429);
   if (!previous || previous.resetAt <= now) attempts.set(ip, { count: 1, resetAt: now + 15 * 60_000 });

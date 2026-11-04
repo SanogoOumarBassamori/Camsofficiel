@@ -23,6 +23,15 @@ function sameText(a: string, b: string) {
   return x.length === y.length && timingSafeEqual(x, y);
 }
 
+// Les messages affichés après une action sont signés : un lien piégé ne peut pas faire afficher un faux texte sur nos pages.
+export function sealMessage(text: string) {
+  return authConfigured() ? sign(`flash:${text}`).slice(0, 32) : "";
+}
+
+export function messageIsGenuine(text: string | undefined, seal: string | undefined) {
+  return Boolean(text && seal && authConfigured() && sameText(seal, sealMessage(text)));
+}
+
 export async function hashPassword(password: string) {
   const salt = randomBytes(16).toString("hex");
   return `${salt}:${(await scryptAsync(password, salt, 64)).toString("hex")}`;

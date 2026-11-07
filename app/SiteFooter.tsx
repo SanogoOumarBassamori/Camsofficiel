@@ -6,7 +6,7 @@ export default function SiteFooter() {
     <footer>
       <Link className="footer-brand" href="/#accueil"><Image src="/logo.jpg" alt="" width={1280} height={1080} /> CAMS</Link>
       <span>Cabinet d’Accompagnement et de Management Social</span>
-      <span>© {new Date().getFullYear()} CAMS · Côte d’Ivoire</span>
+      <span>© {new Date().getFullYear()} CAMS · Abidjan, Côte d’Ivoire</span>
       <a href="#">Retour en haut ↑</a>
       <Link className="footer-admin" href="/admin" rel="nofollow">Espace CAMS</Link>
     </footer>

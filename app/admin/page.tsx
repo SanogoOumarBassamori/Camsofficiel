@@ -144,6 +144,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
             <h2>Ajouter un membre</h2>
             <label>Nom et prénom<input name="name" required maxLength={80} /></label>
             <label>Fonction<input name="role" required maxLength={120} placeholder="Ex. : Médiatrice — Gestion des plaintes" /></label>
+            <label>Petite description (facultative)<textarea name="bio" maxLength={300} rows={3} placeholder="Ex. : 10 ans d’expérience en médiation familiale." /></label>
             <label>Photo (facultative)<input name="file" type="file" accept="image/jpeg,image/png,image/webp" /><small>Un portrait de face, 8 Mo au plus.</small></label>
             <Submit className="admin-primary" pendingText="Envoi…">Ajouter</Submit>
           </form>
@@ -154,6 +155,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
                 <input type="hidden" name="id" value={m.id} />
                 <label>Nom et prénom<input name="name" required maxLength={80} defaultValue={m.name} /></label>
                 <label>Fonction<input name="role" required maxLength={120} defaultValue={m.role} /></label>
+                <label>Petite description (facultative)<textarea name="bio" maxLength={300} rows={3} defaultValue={m.bio ?? ""} /></label>
                 <label>{m.photo ? "Changer la photo" : "Ajouter une photo"}<input name="file" type="file" accept="image/jpeg,image/png,image/webp" /></label>
                 <Submit className="admin-primary" pendingText="Envoi…">Enregistrer</Submit>
               </form>

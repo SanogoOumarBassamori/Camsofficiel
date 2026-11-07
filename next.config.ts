@@ -2,13 +2,13 @@ import type { NextConfig } from "next";
 
 const dev = process.env.NODE_ENV === "development";
 
-// Politique de contenu : seules nos propres ressources (et les polices Google) peuvent se charger,
+// Politique de contenu : seules nos propres ressources (polices comprises, hébergées par le site) peuvent se charger,
 // le site ne peut pas être intégré ailleurs et les formulaires ne peuvent envoyer que vers le site.
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${dev ? " 'unsafe-eval'" : ""}`,
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "font-src 'self' data: https://fonts.gstatic.com",
+  "style-src 'self' 'unsafe-inline'",
+  "font-src 'self' data:",
   "img-src 'self' data: blob:",
   `connect-src 'self'${dev ? " ws: wss:" : ""}`,
   "frame-ancestors 'none'",

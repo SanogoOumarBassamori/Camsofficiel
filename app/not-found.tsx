@@ -3,7 +3,7 @@ import Link from "next/link";
 import SiteFooter from "./SiteFooter";
 import SiteHeader from "./SiteHeader";
 
-export const metadata: Metadata = { title: "Page introuvable — CAMS" };
+export const metadata: Metadata = { title: "Page introuvable", robots: { index: false } };
 
 export default function NotFound() {
   return <main>

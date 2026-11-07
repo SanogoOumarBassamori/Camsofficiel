@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import JsonLd from "../JsonLd";
 import ScrollReveal from "../ScrollReveal";
+import { breadcrumb, pageMeta } from "../seo";
 import SiteFooter from "../SiteFooter";
 import SiteHeader from "../SiteHeader";
 import { getContent } from "../_server/store";
 
-export const metadata: Metadata = {
-  title: "Médiathèque — CAMS",
-  description: "Photos, vidéos et documents des activités du Cabinet d’Accompagnement et de Management Social.",
-};
+export const metadata: Metadata = pageMeta("/mediatheque", "Médiathèque : photos, vidéos et documents", "Photos, vidéos et documents sur les activités du CAMS à Abidjan : ateliers, formations, sensibilisations et ressources à télécharger.");
 
 function Empty({ text }: { text: string }) {
   return <div className="empty-state"><span className="empty-icon" aria-hidden="true">✳</span><p>{text}</p></div>;
@@ -18,6 +17,7 @@ function Empty({ text }: { text: string }) {
 export default async function Mediatheque() {
   const { photos, videos, documents } = await getContent();
   return <main>
+    <JsonLd data={breadcrumb("Médiathèque", "/mediatheque")} />
     <SiteHeader />
     <ScrollReveal />
     <section className="page-hero" id="accueil">

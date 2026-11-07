@@ -52,7 +52,7 @@
 .domains-window{overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
 .domains-track{display:flex;width:max-content;animation:cams-marquee 36s linear infinite}
 .domains-group{display:flex;flex:0 0 auto;align-items:center;gap:28px;padding-right:28px;white-space:nowrap}
-.domains-group span{font:500 18px 'Playfair Display',Georgia,serif}
+.domains-group span{font:500 18px var(--font-serif),Georgia,serif}
 .domains-group i{color:#d8bf80;font-size:13px;font-style:normal}
 .domains-window:hover .domains-track{animation-play-state:paused}
 @keyframes cams-marquee{to{transform:translateX(-50%)}}

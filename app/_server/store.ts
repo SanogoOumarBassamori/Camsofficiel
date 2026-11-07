@@ -13,7 +13,7 @@ export const uploadDir = path.join(dataDir, "uploads");
 export type Photo = { id: string; src: string; alt: string; caption: string };
 export type Video = { id: string; title: string; url: string };
 export type Doc = { id: string; title: string; href: string };
-export type Member = { id: string; name: string; role: string; photo?: string };
+export type Member = { id: string; name: string; role: string; bio?: string; photo?: string };
 export type Partner = { id: string; name: string; url?: string; logo?: string };
 export type Content = {
   contact: { email: string; phone: string; whatsapp: string };

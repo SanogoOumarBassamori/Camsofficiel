@@ -6,9 +6,10 @@ body:has(.admin-shell) .site-band{display:none}
 .admin-muted{color:var(--muted);margin:0 0 18px}
 .admin-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:0 1px 2px rgba(15,61,38,.05)}
 .admin-shell label{display:grid;gap:6px;font-weight:600;font-size:15px}
-.admin-shell input:not([type=hidden]):not([type=file]){width:100%;min-height:48px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;font:inherit;font-weight:400;background:var(--paper);color:var(--ink)}
+.admin-shell input:not([type=hidden]):not([type=file]),.admin-shell textarea{width:100%;min-height:48px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;font:inherit;font-weight:400;background:var(--paper);color:var(--ink)}
 .admin-shell input[type=file]{width:100%;font:inherit;font-size:14px;font-weight:400;padding:10px;border:1px dashed var(--line);border-radius:10px;background:var(--paper)}
-.admin-shell input:focus-visible{outline:3px solid var(--gold-soft);outline-offset:1px;border-color:var(--green)}
+.admin-shell textarea{resize:vertical}
+.admin-shell input:focus-visible,.admin-shell textarea:focus-visible{outline:3px solid var(--gold-soft);outline-offset:1px;border-color:var(--green)}
 .admin-shell small{font-weight:400;color:var(--muted);font-size:14px}
 .admin-shell button,.admin-shell a.admin-primary,.admin-shell a.admin-whatsapp,.admin-shell a.admin-ghost{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border-radius:10px;border:1px solid transparent;font:inherit;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;touch-action:manipulation;white-space:nowrap}
 .admin-shell button:disabled{opacity:.6;cursor:progress}

@@ -108,6 +108,7 @@ export async function saveMember(form: FormData) {
   const id = text(form, "id");
   const name = text(form, "name", 80);
   const role = text(form, "role", 120);
+  const bio = text(form, "bio", 300) || undefined;
   if (!name || !role) back("equipe", "err", "Indiquez le nom et la fonction.");
   const file = form.get("file") as File | null;
   let photo: string | undefined;
@@ -120,11 +121,12 @@ export async function saveMember(form: FormData) {
   let old: string | undefined;
   await updateContent((c) => {
     const member = c.team.find((m) => m.id === id);
-    if (!member) c.team.push({ id: newId(), name, role, photo });
+    if (!member) c.team.push({ id: newId(), name, role, bio, photo });
     else {
       if (photo) { old = member.photo; member.photo = photo; }
       member.name = name;
       member.role = role;
+      member.bio = bio;
     }
   });
   await removeUpload(old);

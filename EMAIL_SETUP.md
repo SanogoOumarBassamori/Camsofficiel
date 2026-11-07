@@ -4,7 +4,7 @@ Le formulaire envoie les demandes depuis `/api/contact` avec la clé conservée 
 
 ## Démarrage rapide (sans nom de domaine)
 
-Tant que le domaine cams.ci n’est pas acheté, Resend peut envoyer depuis son adresse de test, mais **uniquement vers l’e-mail du compte Resend**. Le destinataire du site étant `sanogooumarbassamori@gmail.com`, créez donc le compte Resend avec cette même adresse.
+Tant que le domaine cams.ci n’est pas acheté, Resend peut envoyer depuis son adresse de test, mais **uniquement vers l’e-mail du compte Resend**. Le destinataire du site étant `cams.social26@gmail.com`, créez donc le compte Resend avec cette même adresse.
 
 1. Créez un compte sur resend.com avec `sanogooumarbassamori@gmail.com`.
 2. Menu API Keys → Create API Key (permission « Sending access ») → copiez la clé `re_…`.

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./admin.css";
 
 export const metadata: Metadata = {
-  title: "Tableau de bord — CAMS",
+  title: { absolute: "Tableau de bord — CAMS" },
   robots: { index: false, follow: false },
 };
 

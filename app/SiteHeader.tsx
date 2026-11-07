@@ -11,7 +11,7 @@ const links = [
   ["Nos publics", "/#publics"],
   ["Notre approche", "/#approche"],
   ["Médiathèque", "/mediatheque"],
-  ["Nos équipes", "/equipe"],
+  ["Notre équipes", "/equipe"],
 ];
 
 export default function SiteHeader() {
@@ -19,7 +19,8 @@ export default function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    // Écart entre les deux seuils plus grand que le rétrécissement de l’en-tête : sinon la page remonte, repasse sous le seuil et l’en-tête oscille.
+    const onScroll = () => setScrolled((was) => (was ? window.scrollY > 8 : window.scrollY > 80));
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -27,7 +28,7 @@ export default function SiteHeader() {
   return (
     <header className={`topbar${scrolled ? " is-scrolled" : ""}`}>
       <Link className="brand" href="/#accueil" onClick={() => setOpen(false)}>
-        <Image src="/logo-header.webp" alt="CAMS — Cabinet d’Accompagnement et de Management Social" width={640} height={597} priority />
+        <Image src="/logo-header.webp" alt="CAMS — Cabinet d’Accompagnement et de Management Social" width={640} height={597} loading="eager" />
       </Link>
       <button
         className="menu-toggle"

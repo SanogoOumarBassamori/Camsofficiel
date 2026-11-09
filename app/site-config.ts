@@ -26,15 +26,12 @@ export const siteConfig = {
       { title: "Exemple · Plaquette de présentation du CAMS (PDF)", href: "/documents/exemple-plaquette-cams.pdf" },
     ] as { title: string; href: string }[],
   },
-  // Nos équipes : nom, fonction et photo (dans public/images) de chaque membre.
-  // EXEMPLES d’affichage : à remplacer par les vrais membres avant la mise en ligne.
+  // Notre équipe : un responsable par pôle d’expertise (noms et photos à renseigner depuis le tableau de bord).
   team: [
-    { name: "Prénom Nom", role: "Directeur·rice — Management social" },
-    { name: "Prénom Nom", role: "Travailleur·se social·e — Accompagnement psychosocial" },
-    { name: "Prénom Nom", role: "Formateur·rice & coach" },
-    { name: "Prénom Nom", role: "Médiateur·rice — Gestion des plaintes" },
-    { name: "Prénom Nom", role: "Diététicien·ne — Nutrition" },
-    { name: "Prénom Nom", role: "Chargé·e de prévention & bien-être" },
+    { name: "Prénom Nom", role: "Responsable du pôle Accompagnement psychosocial et coaching" },
+    { name: "Prénom Nom", role: "Responsable du pôle Management social et consultance" },
+    { name: "Prénom Nom", role: "Responsable du pôle Formation" },
+    { name: "Prénom Nom", role: "Responsable du pôle Nutrition et diététique" },
   ] as { name: string; role: string; photo?: string }[],
 };
 
@@ -47,7 +44,7 @@ export const services = [
   { title: "Médiation & gestion des plaintes", text: "Des dispositifs d’écoute, d’orientation, de médiation et de gestion des situations sensibles.", img: "service-mediation", alt: "Deux hommes en discussion autour d’une table", icon: ["M3 6.5A2.5 2.5 0 0 1 5.5 4h8A2.5 2.5 0 0 1 16 6.5v4a2.5 2.5 0 0 1-2.5 2.5H8l-3.5 3V13A2.5 2.5 0 0 1 3 10.5z", "M19 9a2 2 0 0 1 2 2v4.5a2 2 0 0 1-2 2V20l-3-2.5h-4a2 2 0 0 1-2-2"] },
   { title: "Nutrition & diététique", text: "Éducation nutritionnelle et accompagnement en diététique selon les besoins et le champ de compétence.", img: "service-nutrition-saine", alt: "Femme savourant un repas sain à base de fruits", icon: ["M12 7.5c-1.6-1.3-5.2-1.4-6.6 1.6-1.3 2.9-.4 7 2 9.3 1.4 1.3 3 1.1 4.6.4 1.6.7 3.2.9 4.6-.4 2.4-2.3 3.3-6.4 2-9.3-1.4-3-5-2.9-6.6-1.6z", "M12 7.5c0-2 1-3.6 3-4.5"] },
 ];  
-// Pôles d’expertise affichés sur la page Nos équipes (icônes reprises des domaines).
+// Pôles d’expertise affichés sur la page Notre équipe (icônes reprises des domaines).
 export const poles = [
   { title: "Accompagnement psychosocial et coaching", text: "Écoute, soutien psychosocial et coaching des personnes, des familles et des équipes face aux difficultés personnelles et professionnelles.", icon: services[0].icon },
   { title: "Management social et consultance", text: "Diagnostic, conseil et accompagnement des organisations pour un climat social apaisé et une meilleure performance humaine.", icon: services[1].icon },

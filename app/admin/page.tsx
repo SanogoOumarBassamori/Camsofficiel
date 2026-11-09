@@ -19,7 +19,7 @@ const tabs = [
   { id: "demandes", label: "Demandes", title: "Demandes de rendez-vous", desc: "Les demandes envoyées par le formulaire du site, la plus récente en premier." },
   { id: "coordonnees", label: "Coordonnées", title: "Coordonnées du cabinet", desc: "Affichées sur le site. Les demandes du formulaire sont envoyées à cette adresse e-mail et à ce numéro WhatsApp." },
   { id: "mediatheque", label: "Médiathèque", title: "Médiathèque", desc: "Publiez ou retirez les photos, vidéos et documents de la page Médiathèque." },
-  { id: "equipe", label: "Équipe", title: "Équipe", desc: "Les membres affichés sur la page Nos équipes, dans cet ordre." },
+  { id: "equipe", label: "Équipe", title: "Équipe", desc: "Les membres affichés sur la page Notre équipe, dans cet ordre." },
   { id: "partenaires", label: "Partenaires", title: "Partenaires", desc: "Les partenaires affichés dans la rubrique « Nos partenaires » de la page d’accueil. La rubrique n’apparaît que s’il y a au moins un partenaire." },
   { id: "compte", label: "Mon compte", title: "Mon compte", desc: "Vos identifiants de connexion au tableau de bord." },
 ] as const;

@@ -11,7 +11,7 @@ const serif = Playfair_Display({ subsets: ["latin"], weight: ["500", "600", "700
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: { default: defaultTitle, template: "%s | CAMS Abidjan" },
-  description: "Cabinet à Abidjan : accompagnement social et psychosocial, management social, médiation, formation et nutrition pour particuliers, entreprises, écoles et ONG.",
+  description: "Cabinet à Abidjan : accompagnement psychosocial, management social, consultance, médiation, formation et nutrition pour particuliers, entreprises, écoles et ONG.",
   applicationName: "CAMS",
   openGraph: { type: "website", locale: "fr_CI", siteName, images: [shareImage] },
   twitter: { card: "summary_large_image", images: [shareImage.url] },

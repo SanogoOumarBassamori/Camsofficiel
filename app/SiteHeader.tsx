@@ -11,7 +11,7 @@ const links = [
   ["Nos publics", "/#publics"],
   ["Notre approche", "/#approche"],
   ["Médiathèque", "/mediatheque"],
-  ["Notre équipes", "/equipe"],
+  ["Notre équipe", "/equipe"],
 ];
 
 export default function SiteHeader() {

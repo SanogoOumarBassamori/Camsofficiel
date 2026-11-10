@@ -6,9 +6,28 @@ import { connection } from "next/server";
 import sharp from "sharp";
 import { siteConfig } from "../site-config";
 
-// Données modifiables depuis le tableau de bord, gardées sur le disque du serveur (jamais dans le dépôt).
-export const dataDir = path.resolve(process.env.CAMS_DATA_DIR || "data");
-export const uploadDir = path.join(dataDir, "uploads");
+// Données modifiables depuis le tableau de bord (jamais dans le dépôt) : en ligne dans Supabase (voir HEBERGEMENT.md),
+// sinon sur le disque du serveur, dans data/.
+const dataDir = path.resolve(process.env.CAMS_DATA_DIR || "data");
+const uploadDir = path.join(dataDir, "uploads");
+const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/+$/, "");
+const supabaseKey = process.env.SUPABASE_SECRET_KEY;
+const remote = Boolean(supabaseUrl && supabaseKey);
+const bucket = "cams-media";
+export const mediaTypes: Record<string, string> = { webp: "image/webp", pdf: "application/pdf" };
+
+// Accès serveur à Supabase avec la clé secrète (jamais envoyée au navigateur) ; toute réponse en erreur lève une exception.
+async function supabase(route: string, init: RequestInit = {}) {
+  const key = supabaseKey as string;
+  const response = await fetch(`${supabaseUrl}${route}`, {
+    ...init,
+    cache: "no-store",
+    headers: { apikey: key, ...(key.startsWith("eyJ") ? { Authorization: `Bearer ${key}` } : {}), ...init.headers },
+    signal: AbortSignal.timeout(15_000),
+  });
+  if (!response.ok) throw new Error(`Supabase ${response.status}`);
+  return response;
+}
 
 export type Photo = { id: string; src: string; alt: string; caption: string };
 export type Video = { id: string; title: string; url: string };
@@ -48,6 +67,11 @@ function defaults(): Content {
 }
 
 async function readJson<T>(file: string, fallback: () => T): Promise<T> {
+  // Supabase injoignable : erreur plutôt que valeurs par défaut, qui écraseraient ensuite les vraies données.
+  if (remote) {
+    const rows = (await (await supabase(`/rest/v1/cams_store?key=eq.${file}&select=value`)).json()) as { value: T }[];
+    return rows[0]?.value ?? fallback();
+  }
   try {
     return JSON.parse(await readFile(path.join(dataDir, file), "utf8")) as T;
   } catch {
@@ -57,6 +81,14 @@ async function readJson<T>(file: string, fallback: () => T): Promise<T> {
 
 // Écriture atomique : un fichier temporaire puis un renommage, pour ne jamais laisser un JSON à moitié écrit.
 async function writeJson(file: string, value: unknown) {
+  if (remote) {
+    await supabase("/rest/v1/cams_store", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify({ key: file, value, updated_at: new Date().toISOString() }),
+    });
+    return;
+  }
   await mkdir(dataDir, { recursive: true });
   const target = path.join(dataDir, file);
   const tmp = `${target}.${newId()}.tmp`;
@@ -65,6 +97,7 @@ async function writeJson(file: string, value: unknown) {
 }
 
 // Les écritures passent une par une, pour qu'une demande reçue pendant une modification ne soit pas perdue.
+// shortcut: en ligne, deux copies du site peuvent écrire au même instant ; très rare à ce trafic, sinon passer à une table par demande.
 let queue: Promise<unknown> = Promise.resolve();
 function serial<T>(task: () => Promise<T>) {
   const run = queue.then(task, task);
@@ -122,12 +155,13 @@ export function writeAdmin(value: { hash?: string; version: number }) {
   return serial(() => writeJson("admin.json", value));
 }
 
-const MB = 1024 * 1024;
+// Netlify refuse les envois de plus de 6 Mo environ (encodage compris) : 4 Mo laisse une marge sûre.
+const maxUpload = 4 * 1024 * 1024;
 
 // Les photos sont réencodées : taille réduite, métadonnées (lieu, appareil) retirées.
 export async function saveImage(file: File, shape: "photo" | "square" | "logo" = "photo") {
   if (!file.size) throw new Error("Choisissez une photo.");
-  if (file.size > 8 * MB) throw new Error("La photo dépasse 8 Mo.");
+  if (file.size > maxUpload) throw new Error("La photo dépasse 4 Mo : réduisez-la ou faites une capture d’écran.");
   let output: Buffer;
   try {
     const image = sharp(Buffer.from(await file.arrayBuffer()), { limitInputPixels: 50_000_000 });
@@ -147,20 +181,32 @@ export async function saveImage(file: File, shape: "photo" | "square" | "logo" =
 
 export async function saveDocument(file: File) {
   if (!file.size) throw new Error("Choisissez un document.");
-  if (file.size > 10 * MB) throw new Error("Le document dépasse 10 Mo.");
+  if (file.size > maxUpload) throw new Error("Le document dépasse 4 Mo.");
   const buffer = Buffer.from(await file.arrayBuffer());
   if (buffer.subarray(0, 5).toString("latin1") !== "%PDF-") throw new Error("Seuls les documents PDF sont acceptés.");
   return store(buffer, "pdf");
 }
 
+// Les fichiers restent servis par /media/… dans les deux cas : adresses et politique de sécurité inchangées.
 async function store(buffer: Buffer, ext: string) {
-  await mkdir(uploadDir, { recursive: true });
   const name = `${newId()}.${ext}`;
-  await writeFile(path.join(uploadDir, name), buffer);
+  if (remote) {
+    await supabase(`/storage/v1/object/${bucket}/${name}`, { method: "POST", headers: { "Content-Type": mediaTypes[ext] }, body: new Uint8Array(buffer) });
+  } else {
+    await mkdir(uploadDir, { recursive: true });
+    await writeFile(path.join(uploadDir, name), buffer);
+  }
   return `/media/${name}`;
+}
+
+export async function readUpload(name: string) {
+  if (remote) return new Uint8Array(await (await supabase(`/storage/v1/object/${bucket}/${name}`)).arrayBuffer());
+  return new Uint8Array(await readFile(path.join(uploadDir, name)));
 }
 
 export async function removeUpload(src?: string) {
   const name = src?.startsWith("/media/") ? path.basename(src) : "";
-  if (name) await unlink(path.join(uploadDir, name)).catch(() => undefined);
+  if (!name) return;
+  if (remote) await supabase(`/storage/v1/object/${bucket}/${name}`, { method: "DELETE" }).catch(() => undefined);
+  else await unlink(path.join(uploadDir, name)).catch(() => undefined);
 }

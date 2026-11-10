@@ -1,0 +1,7 @@
+# Hébergement Netlify (voir HEBERGEMENT.md) : Netlify reconnaît Next.js et installe tout seul son adaptateur.
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"

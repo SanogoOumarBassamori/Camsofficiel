@@ -101,7 +101,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
           <div className="admin-grid3">
             <form action={addPhoto} className="admin-card admin-form">
               <h2>Ajouter une photo</h2>
-              <label>Photo<input name="file" type="file" accept="image/jpeg,image/png,image/webp" required /><small>JPG, PNG ou WebP, 8 Mo au plus.</small></label>
+              <label>Photo<input name="file" type="file" accept="image/jpeg,image/png,image/webp" required /><small>JPG, PNG ou WebP, 4 Mo au plus.</small></label>
               <label>Légende<input name="caption" required maxLength={120} placeholder="Ex. : Atelier de formation, Abidjan" /></label>
               <Submit className="admin-primary" pendingText="Envoi…">Publier la photo</Submit>
             </form>
@@ -114,7 +114,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
             <form action={addDocument} className="admin-card admin-form">
               <h2>Ajouter un document</h2>
               <label>Titre<input name="title" required maxLength={120} placeholder="Ex. : Plaquette de présentation" /></label>
-              <label>Fichier PDF<input name="file" type="file" accept="application/pdf" required /><small>PDF, 10 Mo au plus.</small></label>
+              <label>Fichier PDF<input name="file" type="file" accept="application/pdf" required /><small>PDF, 4 Mo au plus.</small></label>
               <Submit className="admin-primary" pendingText="Envoi…">Publier le document</Submit>
             </form>
           </div>
@@ -145,7 +145,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
             <label>Nom et prénom<input name="name" required maxLength={80} /></label>
             <label>Fonction<input name="role" required maxLength={120} placeholder="Ex. : Médiatrice — Gestion des plaintes" /></label>
             <label>Petite description (facultative)<textarea name="bio" maxLength={300} rows={3} placeholder="Ex. : 10 ans d’expérience en médiation familiale." /></label>
-            <label>Photo (facultative)<input name="file" type="file" accept="image/jpeg,image/png,image/webp" /><small>Un portrait de face, 8 Mo au plus.</small></label>
+            <label>Photo (facultative)<input name="file" type="file" accept="image/jpeg,image/png,image/webp" /><small>Un portrait de face, 4 Mo au plus.</small></label>
             <Submit className="admin-primary" pendingText="Envoi…">Ajouter</Submit>
           </form>
           {content.team.length === 0 ? <p className="admin-empty">Aucun membre affiché pour le moment.</p>
@@ -168,7 +168,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
             <h2>Ajouter un partenaire</h2>
             <label>Nom du partenaire<input name="name" required maxLength={100} placeholder="Ex. : Ministère de la Solidarité" /></label>
             <label>Site internet (facultatif)<input name="url" type="url" maxLength={300} placeholder="https://…" /></label>
-            <label>Logo (facultatif)<input name="file" type="file" accept="image/jpeg,image/png,image/webp" /><small>De préférence un PNG sur fond transparent, 8 Mo au plus. Sans logo, le nom s’affiche.</small></label>
+            <label>Logo (facultatif)<input name="file" type="file" accept="image/jpeg,image/png,image/webp" /><small>De préférence un PNG sur fond transparent, 4 Mo au plus. Sans logo, le nom s’affiche.</small></label>
             <Submit className="admin-primary" pendingText="Envoi…">Ajouter</Submit>
           </form>
           {content.partners.length === 0 ? <p className="admin-empty">Aucun partenaire pour le moment : la rubrique est masquée sur le site.</p>

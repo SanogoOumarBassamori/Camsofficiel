@@ -1,4 +1,4 @@
-import { addRequest, getContent, waNumber } from "../../_server/store";
+import { addRequest, waNumber } from "../../_server/store";
 import { appointment } from "../../site-config";
 
 export const runtime = "nodejs";
@@ -126,10 +126,10 @@ export async function POST(request: Request) {
     saved = false;
     if (channel === "whatsapp") return json({ error: "Demande non enregistrée." }, 500);
   }
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM_EMAIL;
-  if (channel === "whatsapp" || (saved && (!apiKey || !from))) return json({ ok: true });
-  if (!apiKey || !from) return json({ error: "La demande n’a pas pu être transmise. Utilisez WhatsApp." }, 503);
+  // Adresse du script Google (voir EMAIL_SETUP.md) : c’est le compte Gmail du cabinet qui envoie l’e-mail.
+  const scriptUrl = process.env.GOOGLE_SCRIPT_URL;
+  if (channel === "whatsapp" || (saved && !scriptUrl)) return json({ ok: true });
+  if (!scriptUrl) return json({ error: "La demande n’a pas pu être transmise. Utilisez WhatsApp." }, 503);
 
   const text = ["Nouvelle demande de rendez-vous reçue depuis le site CAMS.", "", ...rows.map(([k, v]) => `${k} : ${v}`)].join("\n");
   const whatsappLink = `https://wa.me/${waNumber(phone)}`;
@@ -142,21 +142,15 @@ export async function POST(request: Request) {
 </div>`;
 
   try {
-    const response = await fetch("https://api.resend.com/emails", {
+    const response = await fetch(scriptUrl, {
       method: "POST",
-      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        from,
-        to: [(await getContent()).contact.email],
-        subject: `Rendez-vous : ${name} — ${topic}`,
-        reply_to: email || undefined,
-        text,
-        html,
-      }),
-      signal: AbortSignal.timeout(10_000),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ subject: `Rendez-vous : ${name} — ${topic}`, replyTo: email, text, html }),
+      signal: AbortSignal.timeout(15_000),
     });
-    if (!response.ok) {
-      console.error("Resend rejected a CAMS contact request", response.status);
+    // En cas d’erreur, Google renvoie une page HTML avec le code 200 : seul « ok » vaut confirmation.
+    if (!response.ok || (await response.text()).trim() !== "ok") {
+      console.error("Google Apps Script rejected a CAMS contact request", response.status);
       if (saved) return json({ ok: true });
       return json({ error: "L’e-mail n’a pas pu être envoyé. Réessayez ou utilisez WhatsApp." }, 502);
     }

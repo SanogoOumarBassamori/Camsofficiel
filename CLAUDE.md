@@ -15,7 +15,7 @@ Stack : [.projetmemory/stack.md](.projetmemory/stack.md). État : [.projetmemory
 - `app/site-config.ts` — coordonnées et contenus du site (dont l'e-mail destinataire du formulaire).
 - `app/api/` — route `/api/contact` qui enregistre les demandes et les envoie par e-mail, clé côté serveur.
 - `app/admin/` — tableau de bord du client (connexion, coordonnées, médiathèque, équipe, partenaires, demandes) ; voir [TABLEAU_DE_BORD.md](TABLEAU_DE_BORD.md).
-- `app/_server/` — stockage des contenus dans `data/` et sessions de connexion, côté serveur uniquement.
+- `app/_server/` — stockage des contenus (Supabase en ligne, `data/` en local) et sessions de connexion, côté serveur uniquement ; hébergement : [HEBERGEMENT.md](HEBERGEMENT.md).
 - `app/seo.ts` — adresse du site, titres, image de partage et données Google ; voir [SEO.md](SEO.md).
 - `public/` — images statiques (logo).
 

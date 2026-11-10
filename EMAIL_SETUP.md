@@ -1,39 +1,61 @@
-# Activer l’envoi e-mail du formulaire CAMS
+# Recevoir les demandes du formulaire sur Gmail
 
-Le formulaire envoie les demandes depuis `/api/contact` avec la clé conservée côté serveur. Le destinataire est `email` dans `app/site-config.ts`.
+Le formulaire enregistre chaque demande dans le tableau de bord, puis la transmet à un petit script Google. Ce script, créé dans le compte `cams.social26@gmail.com`, envoie l’e-mail depuis ce même compte. Il n’y a ni service payant ni clé d’API.
 
-## Démarrage rapide (sans nom de domaine)
+L’envoi passe par une adresse web Google (HTTPS) et non par le port e-mail du serveur. Il fonctionne donc aussi chez les hébergeurs qui bloquent l’envoi d’e-mails (offre gratuite de Render, beaucoup d’hébergements cPanel).
 
-Tant que le domaine cams.ci n’est pas acheté, Resend peut envoyer depuis son adresse de test, mais **uniquement vers l’e-mail du compte Resend**. Le destinataire du site étant `cams.social26@gmail.com`, créez donc le compte Resend avec cette même adresse.
+## 1. Créer le script (une seule fois)
 
-1. Créez un compte sur resend.com avec `sanogooumarbassamori@gmail.com`.
-2. Menu API Keys → Create API Key (permission « Sending access ») → copiez la clé `re_…`.
-3. Vercel → projet CAMS → Settings → Environment Variables, ajoutez :
-   - `RESEND_API_KEY` = la clé copiée
-   - `RESEND_FROM_EMAIL` = `CAMS <onboarding@resend.dev>`
-4. Redéployez (Deployments → ⋯ → Redeploy), puis testez le formulaire.
+1. Se connecter à Gmail avec `cams.social26@gmail.com`, puis ouvrir script.google.com et cliquer sur « Nouveau projet ».
+2. Renommer le projet « Formulaire CAMS » (en haut à gauche).
+3. Effacer tout le code affiché, coller celui-ci, puis cliquer sur l’icône Enregistrer :
 
-Une fois cams.ci acheté, suivez la procédure ci-dessous pour envoyer depuis `rendezvous@cams.ci`.
+```js
+// Adresse qui reçoit les demandes du site.
+var DESTINATAIRE = "cams.social26@gmail.com";
 
-## Resend
+function doPost(e) {
+  var d = JSON.parse(e.postData.contents);
+  var mail = { to: DESTINATAIRE, name: "Site CAMS", subject: String(d.subject).slice(0, 200), body: String(d.text), htmlBody: String(d.html) };
+  if (d.replyTo) mail.replyTo = String(d.replyTo);
+  MailApp.sendEmail(mail);
+  return ContentService.createTextOutput("ok");
+}
 
-1. Créez un compte Resend et ajoutez un domaine d’envoi que vous possédez.
-2. Ajoutez chez le fournisseur DNS les enregistrements affichés par Resend, puis attendez la validation du domaine.
-3. Dans Resend, créez une API key limitée à l’envoi d’e-mails.
-4. Configurez `RESEND_API_KEY` et `RESEND_FROM_EMAIL` dans Vercel → projet CAMS → Settings → Environment Variables. `RESEND_FROM_EMAIL` doit utiliser le domaine validé, par exemple `CAMS <rendezvous@votre-domaine.ci>`.
-5. Cochez Production (et Preview si nécessaire), enregistrez, puis redéployez.
-
-Ne mettez jamais la clé dans `site-config.ts` ni dans une variable commençant par `NEXT_PUBLIC_`.
-
-## Essai en local
-
-Créez un fichier `.env.local` à la racine du projet (il est ignoré par Git) :
-
-```env
-RESEND_API_KEY=re_votre_cle
-RESEND_FROM_EMAIL=CAMS <rendezvous@votre-domaine.ci>
+// À lancer une fois depuis l'éditeur : donne l'autorisation et envoie un e-mail d'essai.
+function test() {
+  doPost({ postData: { contents: JSON.stringify({ subject: "Essai du formulaire CAMS", text: "Ça marche.", html: "<p>Ça marche.</p>" }) } });
+}
 ```
 
-Redémarrez `npm run dev:mobile` après avoir créé ou modifié ce fichier. Les variables ne sont pas nécessaires pour le build, mais l’envoi renverra un message de configuration manquante tant qu’elles ne sont pas définies.
+4. Dans la liste en haut, choisir `test`, puis cliquer sur « Exécuter ».
+5. Google demande l’autorisation :
+   1. Cliquer sur « Examiner les autorisations », puis choisir le compte cams.social26.
+   2. Cliquer sur « Paramètres avancés », puis sur « Accéder à Formulaire CAMS (non sécurisé) ». C’est normal : le script est le vôtre.
+   3. Cliquer sur « Autoriser ».
+   4. Un e-mail « Essai du formulaire CAMS » arrive dans la boîte.
+6. Cliquer sur « Déployer », puis « Nouveau déploiement ».
+7. Cliquer sur la roue dentée, puis sur « Application Web », et régler :
+   - Exécuter en tant que : **Moi** ;
+   - Qui a accès : **Tout le monde**.
+8. Cliquer sur « Déployer », puis copier l’**URL de l’application Web** (elle finit par `/exec`).
 
-Le bouton WhatsApp reste une alternative. L’envoi e-mail lui-même reste sur le site et affiche un message de confirmation ou d’erreur.
+Cette adresse est secrète : elle ne doit jamais apparaître sur le site ni dans le code. Même si elle fuyait, le script n’envoie qu’à `DESTINATAIRE`.
+
+## 2. Donner l’adresse au site
+
+- **En local** : dans le fichier `.env.local` à la racine du projet (ignoré par Git), ajouter la ligne suivante, puis redémarrer `npm run dev` :
+  ```env
+  GOOGLE_SCRIPT_URL=https://script.google.com/macros/s/…/exec
+  ```
+- **Sur Render** : ouvrir le service CAMS, puis Environment → Add Environment Variable. Nom : `GOOGLE_SCRIPT_URL`, valeur : l’adresse copiée. Enregistrer ; le site redémarre seul.
+- **Chez Safaricloud** : même nom et même valeur dans les variables d’environnement de l’application Node.js.
+
+Les anciennes variables `RESEND_API_KEY` et `RESEND_FROM_EMAIL` peuvent être supprimées.
+
+## Bon à savoir
+
+- **Changer d’adresse de réception** : modifier `DESTINATAIRE` dans le script, enregistrer, puis faire Déployer → Gérer les déploiements → crayon → Version : « Nouvelle version » → Déployer. L’adresse `/exec` reste la même.
+- **Répondre au client** : le bouton « Répondre » de Gmail répond directement au client s’il a laissé son e-mail.
+- **Limite Google** : 100 e-mails par jour avec un compte Gmail gratuit, largement suffisant pour un formulaire.
+- **Si l’e-mail n’arrive pas** : la demande reste visible dans le tableau de bord (onglet Demandes) et le bouton WhatsApp reste disponible.

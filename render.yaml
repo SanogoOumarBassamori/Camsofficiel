@@ -17,9 +17,7 @@ services:
         sync: false
       - key: SESSION_SECRET
         generateValue: true
-      - key: RESEND_API_KEY
-        sync: false
-      - key: RESEND_FROM_EMAIL
+      - key: GOOGLE_SCRIPT_URL
         sync: false
     # Avec le plan "starter" :
     # disk:

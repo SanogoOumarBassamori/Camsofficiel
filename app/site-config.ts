@@ -11,8 +11,8 @@ export const siteConfig = {
   mediatheque: {
     // EXEMPLES d’affichage : à remplacer par les vrais contenus avant la mise en ligne.
     photos: [
-      { src: "/images/formation-abidjan.webp", alt: "Atelier de formation à Abidjan", caption: "Exemple · Atelier de formation, Abidjan" },
-      { src: "/images/reunion-cote-ivoire.webp", alt: "Séance de travail collective", caption: "Exemple · Séance de travail collective" },
+      { src: "/images/atelier-formation.webp", alt: "Formatrice animant un atelier au tableau devant un groupe", caption: "Exemple · Atelier de formation" },
+      { src: "/images/groupe-de-parole.webp", alt: "Groupe de parole animé par un intervenant", caption: "Exemple · Groupe de parole" },
       { src: "/images/service-prevention.webp", alt: "Groupe de parole", caption: "Exemple · Groupe de parole bien-être" },
       { src: "/images/service-formation.webp", alt: "Session de coaching", caption: "Exemple · Session de coaching" },
       { src: "/images/ecoute-soutien.webp", alt: "Entretien d’écoute", caption: "Exemple · Entretien d’écoute" },

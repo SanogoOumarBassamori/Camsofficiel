@@ -42,8 +42,8 @@ const steps = [
 
 const axes = [
   { n: "01", title: "Accompagner", line: "Écouter · Orienter · Soutenir · Concilier", text: "Accompagnement social et psychosocial, écoute, orientation, gestion des plaintes et soutien aux personnes vulnérables.", img: "/images/ecoute-soutien.webp", alt: "Une accompagnatrice soutient une personne en difficulté" },
-  { n: "02", title: "Développer & transformer", line: "Former · Conseiller · Coacher · Renforcer", text: "Formation, conseil, management social et accompagnement des personnes et des organisations.", img: "/images/formation-abidjan.webp", alt: "Atelier de formation à Abidjan" },
-  { n: "03", title: "Prévenir & promouvoir", line: "Prévenir · Promouvoir · Améliorer", text: "Prévention des risques psychosociaux et des conflits, qualité de vie, bien-être et éducation nutritionnelle.", img: "/images/reunion-cote-ivoire.webp", alt: "Séance de travail collective en Côte d’Ivoire" },
+  { n: "02", title: "Développer & transformer", line: "Former · Conseiller · Coacher · Renforcer", text: "Formation, conseil, management social et accompagnement des personnes et des organisations.", img: "/images/atelier-formation.webp", alt: "Formatrice animant un atelier au tableau devant un groupe" },
+  { n: "03", title: "Prévenir & promouvoir", line: "Prévenir · Promouvoir · Améliorer", text: "Prévention des risques psychosociaux et des conflits, qualité de vie, bien-être et éducation nutritionnelle.", img: "/images/groupe-de-parole.webp", alt: "Groupe de parole animé par un intervenant" },
 ];
 
 export default async function Home() {
